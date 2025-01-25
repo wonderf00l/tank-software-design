@@ -24,7 +24,7 @@ import static ru.mipt.bit.platformer.util.GdxGameUtils.*;
 
 public class GameDesktopLauncher implements ApplicationListener {
 
-    private static final float MOVEMENT_SPEED = 0.4f;
+    private static final float MOVEMENT_SPEED = 1.6f;
 
     private Batch batch;
 
@@ -54,12 +54,16 @@ public class GameDesktopLauncher implements ApplicationListener {
         // load level tiles
         level = new TmxMapLoader().load("level.tmx");
         levelRenderer = createSingleLayerMapRenderer(level, batch);
-        TiledMapTileLayer groundLayer = getSingleLayer(level);
+        TiledMapTileLayer groundLayer = getSingleLayer(level); // возможно лишнее, использовать параметры width, height
         tileMovement = new TileMovement(groundLayer, Interpolation.smooth);
 
-        // Texture decodes an image file and loads it into GPU memory, it represents a native resource
+        // Texture decodes an image file and loads it into GPU memory, it represents a
+        // native resource
         blueTankTexture = new Texture("images/tank_blue.png");
-        // TextureRegion represents Texture portion, there may be many TextureRegion instances of the same Texture
+
+
+        // TextureRegion represents Texture portion, there may be many TextureRegion
+        // instances of the same Texture
         playerGraphics = new TextureRegion(blueTankTexture);
         playerRectangle = createBoundingRectangle(playerGraphics);
         // set player initial position
@@ -73,6 +77,35 @@ public class GameDesktopLauncher implements ApplicationListener {
         treeObstacleRectangle = createBoundingRectangle(treeObstacleGraphics);
         moveRectangleAtTileCenter(groundLayer, treeObstacleRectangle, treeObstacleCoordinates);
     }
+
+    /*
+     * 
+     * getDIrectionFRomInput() {
+     * 
+     * switch {
+     * case is pressed up:
+     * return direction.UP
+     * case is pressed down:
+     * return ...
+     * 
+     * }
+     * 
+     * tank.Move(dir) {
+     * 
+     * if (playerCoord + dir.CoordsDelta) != obstCoords {
+     * tank.coords + dirs
+     * movProg = 0f
+     * }
+     * 
+     * rotation = dir.rotation
+     * 
+     * }
+     * 
+     * }
+     * 
+     * 
+     * 
+     */
 
     @Override
     public void render() {
@@ -122,7 +155,8 @@ public class GameDesktopLauncher implements ApplicationListener {
         }
 
         // calculate interpolated player screen coordinates
-        tileMovement.moveRectangleBetweenTileCenters(playerRectangle, playerCoordinates, playerDestinationCoordinates, playerMovementProgress);
+        tileMovement.moveRectangleBetweenTileCenters(playerRectangle,
+                playerCoordinates, playerDestinationCoordinates, playerMovementProgress);
 
         playerMovementProgress = continueProgress(playerMovementProgress, deltaTime, MOVEMENT_SPEED);
         if (isEqual(playerMovementProgress, 1f)) {
@@ -131,7 +165,7 @@ public class GameDesktopLauncher implements ApplicationListener {
         }
 
         // render each tile of the level
-        levelRenderer.render();
+        // levelRenderer.render();
 
         // start recording all drawing commands
         batch.begin();
@@ -163,7 +197,8 @@ public class GameDesktopLauncher implements ApplicationListener {
 
     @Override
     public void dispose() {
-        // dispose of all the native resources (classes which implement com.badlogic.gdx.utils.Disposable)
+        // dispose of all the native resources (classes which implement
+        // com.badlogic.gdx.utils.Disposable)
         greenTreeTexture.dispose();
         blueTankTexture.dispose();
         level.dispose();
