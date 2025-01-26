@@ -61,7 +61,6 @@ public class GameDesktopLauncher implements ApplicationListener {
         // native resource
         blueTankTexture = new Texture("images/tank_blue.png");
 
-
         // TextureRegion represents Texture portion, there may be many TextureRegion
         // instances of the same Texture
         playerGraphics = new TextureRegion(blueTankTexture);
@@ -158,14 +157,16 @@ public class GameDesktopLauncher implements ApplicationListener {
         tileMovement.moveRectangleBetweenTileCenters(playerRectangle,
                 playerCoordinates, playerDestinationCoordinates, playerMovementProgress);
 
+        // moveManager - прогресс движения с ходом времени
         playerMovementProgress = continueProgress(playerMovementProgress, deltaTime, MOVEMENT_SPEED);
-        if (isEqual(playerMovementProgress, 1f)) {
+        if (isEqual(playerMovementProgress, 1f)) { // moveManager.isMovementFinished() } { return progress ==
+                                                   // MOVEMENT_DONE(1) }
             // record that the player has reached his/her destination
             playerCoordinates.set(playerDestinationCoordinates);
         }
 
         // render each tile of the level
-        // levelRenderer.render();
+        levelRenderer.render();
 
         // start recording all drawing commands
         batch.begin();
