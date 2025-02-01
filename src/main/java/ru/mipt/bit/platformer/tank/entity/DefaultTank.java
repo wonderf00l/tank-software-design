@@ -5,7 +5,7 @@ import ru.mipt.bit.platformer.entity.Level;
 import ru.mipt.bit.platformer.entity.Direction;
 import ru.mipt.bit.platformer.movement.entity.MoveManager;;
 
-public class DefaultTank implements Tank { // Tank implements ObjectWithState interface
+public class DefaultTank implements Tank {
 
     // level - сущности хранят level и отмечают свое местоположение на карте(чтобы
     // уровень быстро получал состояние карты),
@@ -43,10 +43,10 @@ public class DefaultTank implements Tank { // Tank implements ObjectWithState in
         return rotation;
     }
 
-    private void updateDestination(Direction direction, boolean hasObstacleOnAWay) {
+    private void updateDestination(Direction direction, boolean canMove) {
         rotation = direction.getRotation();
 
-        if (hasObstacleOnAWay) {
+        if (canMove) {
             return;
         }
 
@@ -55,64 +55,23 @@ public class DefaultTank implements Tank { // Tank implements ObjectWithState in
         movementProgress = MoveManager.MOVEMENT_START;
     }
 
-    /*
-     * 
-     * isMOving() {
-     * return movProg < 1f
-     * }
-     * 
-     * 
-     * moveDOne() { reutrn prog == 1f }
-     * 
-     */
-
-    // upddate() { общий случай обновления сотсония - contniue prog } {
-    //
-    // continueProg()
-    //
-    // if hasFInishedMOv() {
-    // curLocation.set(destLocation);
-    // level.setObjectOnLocation(this, curLocation);
-    // }
-    //
-    //
-    // }
-
-    public void move(Direction direction, boolean hasObstacleOnAWay, float deltaTime) {
+    public void update(float deltaTime) {
+        movementProgress = movementManager.objectMovementProgressAfterDuration(movementProgress, deltaTime);
 
         if (!movementManager.hasObjectFinishedMovement(movementProgress)) {
-            // movementManager.continueObjectMovementProgress(movementProgress, deltaTime);
-
             return;
         }
 
-        // долдно быить ТОЛЬКО В НАЧАЛЕ
-        updateDestination(direction, hasObstacleOnAWay);
+        curLocation.set(destLocation);
 
-        // должно быть ТОЛЬКО В конце движения
-        // curLocation.set(destLocation);
-        // level.setObjectOnLocation(this, curLocation);
+        level.setObjectOnLocation(this, curLocation);
+    }
 
-        /*
-         * 
-         * if !moveManager.isMoving() {
-         * 
-         * updateDest() *
-         * 
-         * return
-         * }
-         * 
-         * 
-         * moveManager.doMovePortion() // aka continueProgress()
-         * 
-         * if moveManager.MoveFinished() {
-         * 
-         * curLoc = destLoc
-         * 
-         * }
-         * 
-         * 
-         * 
-         */
+    public void move(Direction direction, boolean canMove) {
+        if (!movementManager.hasObjectFinishedMovement(movementProgress)) {
+            return;
+        }
+
+        updateDestination(direction, canMove);
     }
 }

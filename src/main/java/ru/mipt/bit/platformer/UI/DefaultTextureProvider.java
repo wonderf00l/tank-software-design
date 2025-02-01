@@ -3,7 +3,7 @@ package ru.mipt.bit.platformer.UI;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-public class DefaultTextureProvider {
+public class DefaultTextureProvider implements TextureProvider {
 
     private final Texture texture;
 

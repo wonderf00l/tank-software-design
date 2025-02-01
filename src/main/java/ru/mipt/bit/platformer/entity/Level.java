@@ -14,9 +14,17 @@ public class Level {
     // маппинг для ускоренного доступа к объектам уровня
     private HashMap<GridPoint2, Object> objectsLocations = new HashMap<>();
 
+    // checks if obj impl updatagle -> upd it's state(чтобы не держать 2 мапы и не
+    // усложнять логику)
+
     public Level(int width, int height) {
         this.width = width;
         this.height = height;
+    }
+
+    public boolean isLocationWithinLevel(GridPoint2 location) {
+        return 0 <= location.x && location.x <= width &&
+                0 <= location.y && location.y <= height;
     }
 
     // api ниже используется объектами уровня
@@ -31,8 +39,7 @@ public class Level {
         objectsLocations.remove(location);
     }
 
-    public boolean isLocationWithinLevel(GridPoint2 location) {
-        return 0 <= location.x && location.x <= width &&
-                0 <= location.y && location.y <= height;
+    public boolean isLocationOccupied(GridPoint2 location) {
+        return objectsLocations.containsKey(location);
     }
 }

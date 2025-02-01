@@ -10,7 +10,7 @@ public class DefaultMoveManager implements MoveManager {
         this.speed = speed;
     }
 
-    public float continueObjectMovementProgress(float curObjMoveProgress, float moveDuration) {
+    public float objectMovementProgressAfterDuration(float curObjMoveProgress, float moveDuration) {
         return clamp(curObjMoveProgress + moveDuration / speed, MOVEMENT_START, MOVEMENT_FINISH);
     }
 
