@@ -5,7 +5,7 @@ import static com.badlogic.gdx.Input.Keys;
 import java.util.HashMap;
 
 import ru.mipt.bit.platformer.event.Event;
-import ru.mipt.bit.platformer.level.Level;
+import ru.mipt.bit.platformer.level.entity.Level;
 import ru.mipt.bit.platformer.command.CommandProducer;
 import ru.mipt.bit.platformer.command.move.MoveCommandProducer;
 import ru.mipt.bit.platformer.entity.Direction;

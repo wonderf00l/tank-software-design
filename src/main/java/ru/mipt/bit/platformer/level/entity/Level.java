@@ -1,4 +1,4 @@
-package ru.mipt.bit.platformer.level;
+package ru.mipt.bit.platformer.level.entity;
 
 import java.util.HashMap;
 
@@ -37,6 +37,9 @@ public class Level {
 
     // добавление объекта, изменение позиции
     public void setObjectOnLocation(Object obj, GridPoint2 location) {
+
+        // if was not in map, creation --> notify listeners
+
         objectsLocations.put(location, obj);
     }
 

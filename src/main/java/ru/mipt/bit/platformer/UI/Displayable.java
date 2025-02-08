@@ -4,11 +4,11 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 
 public interface Displayable {
-    public void display(Drawer drawer);
+    void display(Drawer drawer);
 
-    public TextureRegion getTexture();
+    TextureRegion getTexture();
 
-    public Rectangle getRectangle();
+    Rectangle getRectangle();
 
-    public float getRotation();
+    float getRotation();
 }

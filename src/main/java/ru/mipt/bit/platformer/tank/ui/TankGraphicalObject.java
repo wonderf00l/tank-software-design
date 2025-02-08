@@ -41,7 +41,7 @@ import com.badlogic.gdx.math.Rectangle;
 // drawable 
 
 // console UI, etc
-public class TankView implements Displayable {
+public class TankGraphicalObject implements Displayable {
 
     private final TextureRegion textureRegion;
 
@@ -51,7 +51,7 @@ public class TankView implements Displayable {
 
     private final Tank tank;
 
-    public TankView(Tank tank, TextureProvider textureProvider, TileMovement tileMovement) {
+    public TankGraphicalObject(Tank tank, TextureProvider textureProvider, TileMovement tileMovement) {
         this.tank = tank;
 
         this.textureRegion = textureProvider.getTextureRegion();
@@ -81,9 +81,5 @@ public class TankView implements Displayable {
 
     public TextureRegion getTexture() {
         return textureRegion;
-    }
-
-    public void close() {
-        
     }
 }
