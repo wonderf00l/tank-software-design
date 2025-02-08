@@ -3,7 +3,7 @@ package ru.mipt.bit.platformer.event;
 public class Event {
     private final Integer type;
 
-    Event(Integer type) {
+    public Event(Integer type) {
         this.type = type;
     }
 

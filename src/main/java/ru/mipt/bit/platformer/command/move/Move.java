@@ -1,26 +1,11 @@
-package ru.mipt.bit.platformer.command;
+package ru.mipt.bit.platformer.command.move;
 
 import com.badlogic.gdx.math.GridPoint2;
 
+import ru.mipt.bit.platformer.command.Command;
 import ru.mipt.bit.platformer.entity.Direction;
 import ru.mipt.bit.platformer.entity.Movable;
-import ru.mipt.bit.platformer.entity.Level;
-
-/**
- * 
- * 
- * свой набор iте констант для каждого provider:
- * для клавы можно просто проксировать класс public keys
- * 
- * для random свои const инты и т.п
- * 
- * 
- * маппинг для кажого провайдера свой - просто свои map[Event]Cmd
- * 
- * как провайдить мапу? как заложить возможность конфигурирования?
- * 
- * 
- */
+import ru.mipt.bit.platformer.level.Level;
 
 public class Move implements Command {
 

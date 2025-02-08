@@ -1,8 +1,10 @@
-package ru.mipt.bit.platformer.entity;
+package ru.mipt.bit.platformer.level;
 
 import java.util.HashMap;
 
 import com.badlogic.gdx.math.GridPoint2;
+
+import ru.mipt.bit.platformer.entity.Object;
 
 // levelProvider - provide level class instance from file, random etc
 
@@ -27,6 +29,10 @@ public class Level {
                 0 <= location.y && location.y <= height;
     }
 
+    public boolean isLocationOccupied(GridPoint2 location) {
+        return objectsLocations.containsKey(location);
+    }
+
     // api ниже используется объектами уровня
 
     // добавление объекта, изменение позиции
@@ -39,7 +45,4 @@ public class Level {
         objectsLocations.remove(location);
     }
 
-    public boolean isLocationOccupied(GridPoint2 location) {
-        return objectsLocations.containsKey(location);
-    }
 }

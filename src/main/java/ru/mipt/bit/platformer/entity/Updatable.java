@@ -1,6 +1,6 @@
 package ru.mipt.bit.platformer.entity;
 
-// smth that can update it's state, that can occur during deltaTime
+// smth that can update it's state, that can change during deltaTime
 public interface Updatable extends Object {
-    public void update(float deltaTime);
+    void update(float deltaTime);
 }

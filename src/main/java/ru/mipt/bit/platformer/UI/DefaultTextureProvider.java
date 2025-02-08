@@ -7,7 +7,6 @@ public class DefaultTextureProvider implements TextureProvider {
 
     private final Texture texture;
 
-    // можно передавать и саму текстуру как зависимость
     public DefaultTextureProvider(String imgPath) {
         this.texture = new Texture(imgPath);
     }
@@ -16,4 +15,7 @@ public class DefaultTextureProvider implements TextureProvider {
         return new TextureRegion(this.texture);
     }
 
+    public void close() {
+        texture.dispose();
+    }
 }

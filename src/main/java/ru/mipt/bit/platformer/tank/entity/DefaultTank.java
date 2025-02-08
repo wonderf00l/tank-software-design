@@ -1,8 +1,9 @@
 package ru.mipt.bit.platformer.tank.entity;
 
 import com.badlogic.gdx.math.GridPoint2;
-import ru.mipt.bit.platformer.entity.Level;
+
 import ru.mipt.bit.platformer.entity.Direction;
+import ru.mipt.bit.platformer.level.Level;
 import ru.mipt.bit.platformer.movement.entity.MoveManager;;
 
 public class DefaultTank implements Tank {
@@ -43,10 +44,18 @@ public class DefaultTank implements Tank {
         return rotation;
     }
 
+    public GridPoint2 getCurrentCoordinates() {
+        return curLocation;
+    }
+
+    public GridPoint2 getDestinationCoordinates() {
+        return destLocation;
+    }
+
     private void updateDestination(Direction direction, boolean canMove) {
         rotation = direction.getRotation();
 
-        if (canMove) {
+        if (!canMove) {
             return;
         }
 

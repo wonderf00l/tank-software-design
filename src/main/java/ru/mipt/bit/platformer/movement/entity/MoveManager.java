@@ -6,7 +6,7 @@ public interface MoveManager {
     public static final float MOVEMENT_START = 0f;
     public static final float MOVEMENT_FINISH = 1f;
 
-    public float objectMovementProgressAfterDuration(float curObjMoveProgress, float moveDuration);
+    float objectMovementProgressAfterDuration(float curObjMoveProgress, float moveDuration);
 
-    public boolean hasObjectFinishedMovement(float objMoveProgress);
+    boolean hasObjectFinishedMovement(float objMoveProgress);
 }
