@@ -21,9 +21,9 @@ public class FromFileLevelFiller implements LevelFiller {
     private static final char TREE = 'T';
     private static final char EMPTY_CELL = '_';
 
-    private final BufferedReader bufReader;
+    private BufferedReader bufReader;
 
-    private final MoveManager moveManager;
+    private MoveManager moveManager;
 
     private ArrayList<Object> fetchedObjects = new ArrayList<>();
 
@@ -66,7 +66,7 @@ public class FromFileLevelFiller implements LevelFiller {
             throws InvalidCharacterException {
 
         for (int i = 0; i < fileLine.length(); i++) {
-            GridPoint2 location = new GridPoint2(i, level.getHeight() - lineIdx);
+            GridPoint2 location = new GridPoint2(i, (level.getHeight() - 1) - lineIdx);
 
             char cellCh = fileLine.charAt(i);
 

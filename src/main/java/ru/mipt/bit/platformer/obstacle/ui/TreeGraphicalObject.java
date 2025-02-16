@@ -15,11 +15,11 @@ import ru.mipt.bit.platformer.UI.Displayable;
 
 public class TreeGraphicalObject implements Displayable {
 
-    private final TextureRegion textureRegion;
+    private TextureRegion textureRegion;
 
-    private final Rectangle treeRectangle;
+    private Rectangle treeRectangle;
 
-    private final Tree tree;
+    private Tree tree;
 
     public TreeGraphicalObject(Tree tree, TextureRegion textureRegion, TiledMapTileLayer tileLayer) {
         this.tree = tree;

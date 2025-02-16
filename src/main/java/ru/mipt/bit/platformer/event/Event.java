@@ -2,7 +2,7 @@ package ru.mipt.bit.platformer.event;
 
 public class Event {
     private final Integer type;
-    private final EventListener whoGot;
+    private EventListener whoGot;
 
     public Event(Integer type, EventListener whoGot) {
         this.type = type;

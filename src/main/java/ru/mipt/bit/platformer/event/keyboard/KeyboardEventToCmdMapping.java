@@ -14,7 +14,7 @@ public class KeyboardEventToCmdMapping {
     private Level level;
 
     // event type is a simple Integer
-    private HashMap<Integer, CommandProducer> mapping;
+    private HashMap<Integer, CommandProducer> mapping = new HashMap<>();
 
     public KeyboardEventToCmdMapping(Level gameLevel) {
         level = gameLevel;

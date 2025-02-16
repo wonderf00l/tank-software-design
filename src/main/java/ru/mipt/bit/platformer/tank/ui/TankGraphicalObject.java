@@ -13,13 +13,13 @@ import com.badlogic.gdx.math.Rectangle;
 // desktop UI, CLI, etc
 public class TankGraphicalObject implements Displayable {
 
-    private final TextureRegion textureRegion;
+    private TextureRegion textureRegion;
 
-    private final Rectangle tankRectangle;
+    private Rectangle tankRectangle;
 
-    private final TileMovement timeMovement;
+    private TileMovement timeMovement;
 
-    private final Tank tank;
+    private Tank tank;
 
     public TankGraphicalObject(Tank tank, TextureRegion textureRegion, TileMovement tileMovement) {
         this.tank = tank;
@@ -36,7 +36,16 @@ public class TankGraphicalObject implements Displayable {
                 tankRectangle,
                 tank.getCurrentCoordinates(),
                 tank.getDestinationCoordinates(),
-                tank.getRotation());
+                tank.getMovementProgress());
+
+        System.out.printf("cur coords: %d %d\n", tank.getCurrentCoordinates().x, tank.getCurrentCoordinates().y);
+
+        System.out.printf("dest coords: %d %d\n", tank.getDestinationCoordinates().x,
+                tank.getDestinationCoordinates().y);
+
+        System.out.printf("obj mov prog: %f\n", tank.getMovementProgress());
+
+        System.out.printf("obj rectangle: %f %f\n", tankRectangle.x, tankRectangle.y);
 
         drawer.draw(this);
     }

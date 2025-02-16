@@ -13,7 +13,7 @@ public class Level {
     private final int width;
     private final int height;
 
-    public ArrayList<LevelListener> subscribers;
+    private ArrayList<LevelListener> subscribers = new ArrayList<>();
 
     // маппинг для ускоренного доступа к объектам уровня
     private HashMap<GridPoint2, Object> objectsLocations = new HashMap<>();
@@ -27,7 +27,10 @@ public class Level {
     }
 
     public void update(float deltaTime) {
-        for (Object gameObj : objectsLocations.values()) {
+        // to prevent concurrent modification exception
+        HashMap<GridPoint2, Object> objectsLocationsCpy = new HashMap<>(objectsLocations);
+
+        for (Object gameObj : objectsLocationsCpy.values()) {
             if (gameObj instanceof Updatable) {
                 ((Updatable) gameObj).update(deltaTime);
             }
@@ -35,8 +38,8 @@ public class Level {
     }
 
     public boolean isLocationWithinLevel(GridPoint2 location) {
-        return 0 <= location.x && location.x <= width &&
-                0 <= location.y && location.y <= height;
+        return 0 <= location.x && location.x <= (width - 1) &&
+                0 <= location.y && location.y <= (height - 1);
     }
 
     public boolean isLocationOccupied(GridPoint2 location) {

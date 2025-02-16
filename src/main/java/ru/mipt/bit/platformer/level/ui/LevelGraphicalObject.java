@@ -18,9 +18,9 @@ public class LevelGraphicalObject implements LevelListener {
 
     private final HashMap<Class<?>, GraphicalObjectProducer> displayStrategy;
 
-    private final Drawer drawer;
+    private Drawer drawer;
 
-    private final MapRenderer levelRenderer;
+    private MapRenderer levelRenderer;
 
     public LevelGraphicalObject(
             MapRenderer levelRenderer, Drawer drawer, HashMap<Class<?>, GraphicalObjectProducer> displayStrategy) {
@@ -35,13 +35,21 @@ public class LevelGraphicalObject implements LevelListener {
     public void render() {
         levelRenderer.render();
 
+        drawer.begin();
+
         for (Displayable graphObj : levelObjects.values()) {
             graphObj.display(drawer);
         }
+
+        drawer.end();
     }
 
     public void notifyAboutObjectCreation(Object object) {
-        levelObjects.put(object, displayStrategy.get(object.getClass()).produce(object));
+        GraphicalObjectProducer graphObjProducer = displayStrategy.get(object.getClass());
+
+        Displayable graphObj = graphObjProducer.produce(object);
+
+        levelObjects.put(object, graphObj);
     }
 
     public void notifyAboutObjectDeletion(Object object) {

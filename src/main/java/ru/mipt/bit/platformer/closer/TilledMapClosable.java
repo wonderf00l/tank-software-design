@@ -3,7 +3,7 @@ package ru.mipt.bit.platformer.closer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 
 public class TilledMapClosable implements Closable {
-    private final TiledMap tilledMap;
+    private TiledMap tilledMap;
 
     public TilledMapClosable(TiledMap tilledMap) {
         this.tilledMap = tilledMap;

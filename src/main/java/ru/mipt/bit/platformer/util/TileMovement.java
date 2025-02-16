@@ -17,21 +17,6 @@ public class TileMovement {
         this.interpolation = interpolation;
     }
 
-    public Rectangle moveRectangleBetweenTileCenters1(
-            Rectangle rectangle,
-            float fromTileBottomLeftX, float fromTileBottomLeftY,
-            float toTileBottomLeftX, float toTileBottomLeftY,
-            float progress) {
-        // подсчет bottom left x, y можно делать единожды вне этой функции. само же
-        // перемещение заключается в получении новых intermediate boot left x/y
-        float intermediateBottomLeftX = interpolation.apply(fromTileBottomLeftX, toTileBottomLeftX, progress);
-        float intermediateBottomLeftY = interpolation.apply(fromTileBottomLeftY, toTileBottomLeftY, progress);
-
-        return rectangle
-                .setX(intermediateBottomLeftX)
-                .setY(intermediateBottomLeftY);
-    }
-
     public Rectangle moveRectangleBetweenTileCenters(Rectangle rectangle, GridPoint2 fromTileCoordinates,
             GridPoint2 toTileCoordinates, float progress) {
 

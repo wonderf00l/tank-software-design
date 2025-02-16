@@ -9,7 +9,7 @@ import ru.mipt.bit.platformer.entity.Object;
 
 public class MoveCommandProducer implements CommandProducer {
 
-    private final Level level;
+    private Level level;
     private final Direction objDirection;
 
     public MoveCommandProducer(Level gameLevel, Direction direction) {

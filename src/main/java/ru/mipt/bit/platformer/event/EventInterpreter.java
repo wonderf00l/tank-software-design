@@ -13,7 +13,7 @@ import ru.mipt.bit.platformer.entity.Object;
 public class EventInterpreter {
 
     // Integer is an event type
-    private final HashMap<Object, HashMap<Integer, CommandProducer>> interpretationStrategies = new HashMap<>();
+    private HashMap<Object, HashMap<Integer, CommandProducer>> interpretationStrategies = new HashMap<>();
 
     public void addMappingForObject(Object gameObj, HashMap<Integer, CommandProducer> eventToCmdMapping) {
         interpretationStrategies.put(gameObj, eventToCmdMapping);

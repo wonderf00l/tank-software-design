@@ -9,9 +9,9 @@ import ru.mipt.bit.platformer.level.entity.Level;
 
 public class Move implements Command {
 
-    private final Movable obj;
+    private Movable obj;
     private final Direction direction;
-    private final Level level;
+    private Level level;
 
     public Move(Movable objToMove, Direction objDirection, Level gameLevel) {
         obj = objToMove;
@@ -20,7 +20,9 @@ public class Move implements Command {
     }
 
     public void exec() {
-        GridPoint2 destLocation = obj.getLocation().add(direction.getCoordsDelta());
+        GridPoint2 curObjLocation = obj.getLocation().cpy();
+
+        GridPoint2 destLocation = curObjLocation.add(direction.getCoordsDelta());
 
         boolean canMove = level.isLocationWithinLevel(destLocation) && !level.isLocationOccupied(destLocation);
 

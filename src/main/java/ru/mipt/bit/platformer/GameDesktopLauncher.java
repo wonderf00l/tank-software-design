@@ -35,11 +35,13 @@ import ru.mipt.bit.platformer.level.ui.LevelGraphicalObject;
 import ru.mipt.bit.platformer.movement.entity.DefaultMoveManager;
 import ru.mipt.bit.platformer.UI.BatchDrawer;
 import ru.mipt.bit.platformer.UI.GraphicalObjectProducer;
+import ru.mipt.bit.platformer.tank.entity.DefaultTank;
 import ru.mipt.bit.platformer.tank.entity.Tank;
 import ru.mipt.bit.platformer.tank.ui.TankGraphicalObjectProducer;
 import ru.mipt.bit.platformer.obstacle.entity.Tree;
 import ru.mipt.bit.platformer.obstacle.ui.TreeGraphicalObjectProducer;
 import ru.mipt.bit.platformer.entity.Object;
+import ru.mipt.bit.platformer.entity.Updatable;
 import ru.mipt.bit.platformer.event.EventListener;
 
 import static com.badlogic.gdx.Input.Keys.*;
@@ -55,7 +57,7 @@ import java.util.HashMap;
 
 public class GameDesktopLauncher implements ApplicationListener {
 
-    private static final float MOVEMENT_SPEED = 1.6f;
+    private static final float MOVEMENT_SPEED = 3.8f;
 
     private Batch batch;
 
@@ -121,7 +123,7 @@ public class GameDesktopLauncher implements ApplicationListener {
                 groundLayer);
 
         HashMap<Class<?>, GraphicalObjectProducer> displayStrategy = new HashMap<>();
-        displayStrategy.put(Tank.class, tankGraphicsProducer);
+        displayStrategy.put(DefaultTank.class, tankGraphicsProducer);
         displayStrategy.put(Tree.class, treeGraphicsProducer);
 
         BatchDrawer batchDrawer = new BatchDrawer(batch);
@@ -140,12 +142,10 @@ public class GameDesktopLauncher implements ApplicationListener {
         LevelFiller fromFileLevelFiller = null;
 
         try {
-            levelFile = new FileReader("level.txt");
+            levelFile = new FileReader("src/main/resources/level.txt");
 
             fromFileLevelFiller = new FromFileLevelFiller(
                     new BufferedReader(levelFile), new DefaultMoveManager(MOVEMENT_SPEED));
-
-            levelFile.close();
         } catch (IOException e) {
             e.printStackTrace();
 
@@ -153,6 +153,14 @@ public class GameDesktopLauncher implements ApplicationListener {
         }
 
         fromFileLevelFiller.fillLevel(gameLevel);
+
+        try {
+            levelFile.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+
+            return;
+        }
 
         // ---
 
@@ -171,6 +179,11 @@ public class GameDesktopLauncher implements ApplicationListener {
         pollRegistry = new DefaultPollRegistry();
 
         for (Object gameObj : fromFileLevelFiller.fetchedObjects()) {
+            if (!(gameObj instanceof Updatable)) { // полагаем, что ко всем объектам, у которых есть состояние, должен
+                                                   // быть привязан eventListener
+                continue;
+            }
+
             EventListener listenerForObject = ListenerProvider.provideListener(gameObj,
                     false);
             pollRegistry.registerEventListener(gameObj, listenerForObject);

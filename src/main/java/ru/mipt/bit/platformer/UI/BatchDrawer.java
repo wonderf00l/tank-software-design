@@ -18,6 +18,14 @@ public class BatchDrawer implements Drawer, Closable {
                 batch, obj.getTexture(), obj.getRectangle(), obj.getRotation());
     }
 
+    public void begin() {
+        batch.begin();
+    }
+
+    public void end() {
+        batch.end();
+    }
+
     public void close() {
         batch.dispose();
     }

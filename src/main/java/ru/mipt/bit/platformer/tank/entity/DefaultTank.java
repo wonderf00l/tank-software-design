@@ -8,12 +8,6 @@ import ru.mipt.bit.platformer.movement.entity.MoveManager;;
 
 public class DefaultTank implements Tank {
 
-    // level - сущности хранят level и отмечают свое местоположение на карте(чтобы
-    // уровень быстро получал состояние карты),
-    // удаляют себя с логиеского уровня
-    // используют api уровня, чтобы проверить свободна ли координата, пределы уровня
-    // ? - лучше это будет делать уровне
-
     private GridPoint2 curLocation;
     private GridPoint2 destLocation;
 
@@ -31,7 +25,7 @@ public class DefaultTank implements Tank {
         rotation = initDirection.getRotation();
 
         movementManager = moveManager;
-        movementProgress = MoveManager.MOVEMENT_START;
+        movementProgress = MoveManager.MOVEMENT_FINISH;
 
         this.level = level;
     }
@@ -50,6 +44,10 @@ public class DefaultTank implements Tank {
 
     public GridPoint2 getDestinationCoordinates() {
         return destLocation;
+    }
+
+    public float getMovementProgress() {
+        return movementProgress;
     }
 
     private void updateDestination(Direction direction, boolean canMove) {

@@ -7,5 +7,7 @@ public interface Movable extends Object {
 
     GridPoint2 getDestinationCoordinates();
 
+    float getMovementProgress();
+
     void move(Direction direction, boolean canMove);
 }
