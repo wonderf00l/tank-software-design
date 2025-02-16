@@ -1,17 +1,19 @@
 package ru.mipt.bit.platformer.level.entity;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.badlogic.gdx.math.GridPoint2;
 
 import ru.mipt.bit.platformer.entity.Object;
-
-// levelProvider - provide level class instance from file, random etc
+import ru.mipt.bit.platformer.entity.Updatable;
 
 public class Level {
 
     private final int width;
     private final int height;
+
+    public ArrayList<LevelListener> subscribers;
 
     // маппинг для ускоренного доступа к объектам уровня
     private HashMap<GridPoint2, Object> objectsLocations = new HashMap<>();
@@ -22,6 +24,14 @@ public class Level {
     public Level(int width, int height) {
         this.width = width;
         this.height = height;
+    }
+
+    public void update(float deltaTime) {
+        for (Object gameObj : objectsLocations.values()) {
+            if (gameObj instanceof Updatable) {
+                ((Updatable) gameObj).update(deltaTime);
+            }
+        }
     }
 
     public boolean isLocationWithinLevel(GridPoint2 location) {
@@ -35,17 +45,42 @@ public class Level {
 
     // api ниже используется объектами уровня
 
-    // добавление объекта, изменение позиции
+    // изменение позиции
     public void setObjectOnLocation(Object obj, GridPoint2 location) {
-
-        // if was not in map, creation --> notify listeners
+        if (isLocationOccupied(location)) {
+            return;
+        }
 
         objectsLocations.put(location, obj);
     }
 
-    // удаление объекта
-    public void releaseLocation(GridPoint2 location) {
-        objectsLocations.remove(location);
+    public void setNewObjectOnLevel(Object obj, GridPoint2 location) {
+        setObjectOnLocation(obj, location);
+
+        for (LevelListener subscriber : subscribers) {
+            subscriber.notifyAboutObjectCreation(obj);
+        }
     }
 
+    public void deleteObjectFromLevel(GridPoint2 location) {
+        Object obj = objectsLocations.get(location);
+
+        objectsLocations.remove(location);
+
+        for (LevelListener subscriber : subscribers) {
+            subscriber.notifyAboutObjectDeletion(obj);
+        }
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void subscribeToLevelEvents(LevelListener listener) {
+        subscribers.add(listener);
+    }
 }

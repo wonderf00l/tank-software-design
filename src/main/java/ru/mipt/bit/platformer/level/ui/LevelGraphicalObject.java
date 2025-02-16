@@ -6,13 +6,15 @@ import com.badlogic.gdx.maps.MapRenderer;
 
 import ru.mipt.bit.platformer.level.entity.LevelListener;
 
+import ru.mipt.bit.platformer.entity.Object;
+
 import ru.mipt.bit.platformer.UI.Displayable;
 import ru.mipt.bit.platformer.UI.Drawer;
 import ru.mipt.bit.platformer.UI.GraphicalObjectProducer;
 
 public class LevelGraphicalObject implements LevelListener {
 
-    private final HashMap<Object, Displayable> levelObjects = new HashMap<>();
+    private HashMap<Object, Displayable> levelObjects = new HashMap<>();
 
     private final HashMap<Class<?>, GraphicalObjectProducer> displayStrategy;
 
@@ -38,8 +40,11 @@ public class LevelGraphicalObject implements LevelListener {
         }
     }
 
-    // methods to invoke on a publisher side: add/del graphical obj
+    public void notifyAboutObjectCreation(Object object) {
+        levelObjects.put(object, displayStrategy.get(object.getClass()).produce(object));
+    }
 
-    // get graphical obj from logic-graphic mapping
-
+    public void notifyAboutObjectDeletion(Object object) {
+        levelObjects.remove(object);
+    }
 }

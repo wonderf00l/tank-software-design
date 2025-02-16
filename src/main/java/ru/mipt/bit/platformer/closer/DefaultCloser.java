@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class DefaultCloser implements Closer {
 
-    private ArrayList<Closable> registry;
+    private ArrayList<Closable> registry = new ArrayList<>();
 
     public void addClosable(Closable obj) {
         registry.add(obj);

@@ -1,7 +1,5 @@
 package ru.mipt.bit.platformer.UI;
 
-import ru.mipt.bit.platformer.closer.Closable;
-
-public interface Drawer extends Closable {
+public interface Drawer {
     void draw(Displayable obj);
 }

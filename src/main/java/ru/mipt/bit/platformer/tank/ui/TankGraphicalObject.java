@@ -3,7 +3,6 @@ package ru.mipt.bit.platformer.tank.ui;
 import static ru.mipt.bit.platformer.util.GdxGameUtils.createBoundingRectangle;
 
 import ru.mipt.bit.platformer.UI.Displayable;
-import ru.mipt.bit.platformer.UI.TextureProvider;
 import ru.mipt.bit.platformer.UI.Drawer;
 import ru.mipt.bit.platformer.util.TileMovement;
 import ru.mipt.bit.platformer.tank.entity.Tank;
@@ -11,36 +10,7 @@ import ru.mipt.bit.platformer.tank.entity.Tank;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 
-/*
- * 
- *  rectangle as a dependency
- * 
- * getRectangle(textureRegion) { 
- * 
- *  
- * 
- * }
- * 
- * textureProvider interface 
- * 
- * tankTextureProvider {
- * 
- *  // imgProvider interface - from network(for storage economy), fs etc
- * 
- *  texture
- * 
- *  getTextureRegion(texture - NewTexture(imgPath))
- *  
- *      return NewTexureReg()
- * 
- * }
- * 
- */
-
-// disposable
-// drawable 
-
-// console UI, etc
+// desktop UI, CLI, etc
 public class TankGraphicalObject implements Displayable {
 
     private final TextureRegion textureRegion;
@@ -51,10 +21,10 @@ public class TankGraphicalObject implements Displayable {
 
     private final Tank tank;
 
-    public TankGraphicalObject(Tank tank, TextureProvider textureProvider, TileMovement tileMovement) {
+    public TankGraphicalObject(Tank tank, TextureRegion textureRegion, TileMovement tileMovement) {
         this.tank = tank;
 
-        this.textureRegion = textureProvider.getTextureRegion();
+        this.textureRegion = textureRegion;
 
         this.tankRectangle = createBoundingRectangle(textureRegion);
 

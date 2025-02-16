@@ -18,7 +18,7 @@ public class KeyboardEventListener implements EventListener {
 
         for (int key : keysToCheck) {
             if (Gdx.input.isKeyPressed(key)) {
-                happenedEvents.add(new Event(key));
+                happenedEvents.add(new Event(key, this));
             }
         }
 
