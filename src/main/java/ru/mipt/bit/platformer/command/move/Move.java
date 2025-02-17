@@ -24,7 +24,9 @@ public class Move implements Command {
 
         GridPoint2 destLocation = curObjLocation.add(direction.getCoordsDelta());
 
-        boolean canMove = level.isLocationWithinLevel(destLocation) && !level.isLocationOccupied(destLocation);
+        boolean canMove = level.isLocationWithinLevel(destLocation)
+                && !level.isLocationOccupied(destLocation)
+                && !level.isLocationBooked(destLocation);
 
         obj.move(direction, canMove);
     }

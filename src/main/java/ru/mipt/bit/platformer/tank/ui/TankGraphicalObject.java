@@ -38,15 +38,6 @@ public class TankGraphicalObject implements Displayable {
                 tank.getDestinationCoordinates(),
                 tank.getMovementProgress());
 
-        System.out.printf("cur coords: %d %d\n", tank.getCurrentCoordinates().x, tank.getCurrentCoordinates().y);
-
-        System.out.printf("dest coords: %d %d\n", tank.getDestinationCoordinates().x,
-                tank.getDestinationCoordinates().y);
-
-        System.out.printf("obj mov prog: %f\n", tank.getMovementProgress());
-
-        System.out.printf("obj rectangle: %f %f\n", tankRectangle.x, tankRectangle.y);
-
         drawer.draw(this);
     }
 

@@ -2,6 +2,7 @@ package ru.mipt.bit.platformer.level.entity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import com.badlogic.gdx.math.GridPoint2;
 
@@ -17,6 +18,7 @@ public class Level {
 
     // маппинг для ускоренного доступа к объектам уровня
     private HashMap<GridPoint2, Object> objectsLocations = new HashMap<>();
+    private HashSet<GridPoint2> bookedLocations = new HashSet<>();
 
     // bookedLocations - map[Point]struct{}: add when start moving, del when ovement
     // is finished
@@ -58,6 +60,22 @@ public class Level {
         }
 
         objectsLocations.put(location, obj);
+    }
+
+    public void bookLocation(GridPoint2 location) {
+        if (isLocationOccupied(location)) {
+            return;
+        }
+
+        bookedLocations.add(location);
+    }
+
+    public void unbookLocation(GridPoint2 location) {
+        bookedLocations.remove(location);
+    }
+
+    public boolean isLocationBooked(GridPoint2 location) {
+        return bookedLocations.contains(location);
     }
 
     public void setNewObjectOnLevel(Object obj, GridPoint2 location) {

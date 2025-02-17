@@ -58,8 +58,9 @@ public class DefaultTank implements Tank {
         }
 
         // book location(add destLoc to book)
-
         destLocation.add(direction.getCoordsDelta());
+
+        level.bookLocation(destLocation);
 
         movementProgress = MoveManager.MOVEMENT_START;
     }
@@ -71,6 +72,8 @@ public class DefaultTank implements Tank {
             return;
         }
         // movement is finished, booked point is occupied now
+
+        level.unbookLocation(destLocation);
 
         curLocation.set(destLocation);
 

@@ -58,7 +58,7 @@ import java.util.HashMap;
 
 public class GameDesktopLauncher implements ApplicationListener {
 
-    private static final float MOVEMENT_SPEED = 1.0f;
+    private static final float MOVEMENT_SPEED = 2.0f;
 
     private Batch batch;
 
