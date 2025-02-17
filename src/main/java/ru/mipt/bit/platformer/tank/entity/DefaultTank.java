@@ -20,7 +20,7 @@ public class DefaultTank implements Tank {
 
     public DefaultTank(GridPoint2 initLocation, Direction initDirection, MoveManager moveManager, Level level) {
         curLocation = initLocation;
-        destLocation = initLocation;
+        destLocation = curLocation.cpy();
 
         rotation = initDirection.getRotation();
 
@@ -57,6 +57,8 @@ public class DefaultTank implements Tank {
             return;
         }
 
+        // book location(add destLoc to book)
+
         destLocation.add(direction.getCoordsDelta());
 
         movementProgress = MoveManager.MOVEMENT_START;
@@ -68,8 +70,11 @@ public class DefaultTank implements Tank {
         if (!movementManager.hasObjectFinishedMovement(movementProgress)) {
             return;
         }
+        // movement is finished, booked point is occupied now
 
         curLocation.set(destLocation);
+
+        // and del destLoc from booked point
 
         level.setObjectOnLocation(this, curLocation);
     }

@@ -23,6 +23,7 @@ import ru.mipt.bit.platformer.closer.TilledMapClosable;
 import ru.mipt.bit.platformer.command.Command;
 import ru.mipt.bit.platformer.event.ListenerProvider;
 import ru.mipt.bit.platformer.event.keyboard.KeyboardEventToCmdMapping;
+import ru.mipt.bit.platformer.event.random.RandomEventToCmdMapping;
 import ru.mipt.bit.platformer.event.EventInterpreter;
 import ru.mipt.bit.platformer.event.PollRegistry;
 import ru.mipt.bit.platformer.event.DefaultPollRegistry;
@@ -57,7 +58,7 @@ import java.util.HashMap;
 
 public class GameDesktopLauncher implements ApplicationListener {
 
-    private static final float MOVEMENT_SPEED = 3.8f;
+    private static final float MOVEMENT_SPEED = 1.0f;
 
     private Batch batch;
 
@@ -197,7 +198,8 @@ public class GameDesktopLauncher implements ApplicationListener {
         eventInterpreter = new EventInterpreter();
 
         for (Object gameObj : fromFileLevelFiller.fetchedObjects()) {
-            eventInterpreter.addMappingForObject(gameObj, null); // new randomEventToCMdMapping()
+            eventInterpreter.addMappingForObject(gameObj,
+                    new RandomEventToCmdMapping(gameLevel).getEventToCmdMapping());
         }
         eventInterpreter.addMappingForObject(fromFileLevelFiller.getPlayerObject(),
                 new KeyboardEventToCmdMapping(gameLevel).getEventToCmdMapping());

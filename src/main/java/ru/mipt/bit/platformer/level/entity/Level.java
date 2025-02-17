@@ -18,6 +18,9 @@ public class Level {
     // маппинг для ускоренного доступа к объектам уровня
     private HashMap<GridPoint2, Object> objectsLocations = new HashMap<>();
 
+    // bookedLocations - map[Point]struct{}: add when start moving, del when ovement
+    // is finished
+
     // checks if obj impl updatagle -> upd it's state(чтобы не держать 2 мапы и не
     // усложнять логику)
 
