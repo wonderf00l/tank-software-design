@@ -1,4 +1,4 @@
-package ru.mipt.bit.platformer.level.entity.filler;
+package ru.mipt.bit.platformer.level.entity.filler.file;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,12 +9,12 @@ import com.badlogic.gdx.math.GridPoint2;
 import ru.mipt.bit.platformer.entity.Direction;
 import ru.mipt.bit.platformer.entity.Object;
 import ru.mipt.bit.platformer.level.entity.Level;
+import ru.mipt.bit.platformer.level.entity.filler.LevelFiller;
 import ru.mipt.bit.platformer.movement.entity.MoveManager;
 import ru.mipt.bit.platformer.obstacle.entity.Tree;
 import ru.mipt.bit.platformer.tank.entity.DefaultTank;
 import ru.mipt.bit.platformer.tank.entity.Tank;
 
-// close buf reader
 public class FromFileLevelFiller implements LevelFiller {
     private static final char PLAYER = 'X';
     private static final char TANK = 'Y';
@@ -82,7 +82,7 @@ public class FromFileLevelFiller implements LevelFiller {
 
                     if (cellCh == PLAYER) {
                         objControlledByPlayer = tank;
-                        return;
+                        break;
                     }
 
                     fetchedObjects.add(tank);

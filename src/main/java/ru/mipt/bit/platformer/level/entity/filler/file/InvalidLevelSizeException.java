@@ -1,4 +1,4 @@
-package ru.mipt.bit.platformer.level.entity.filler;
+package ru.mipt.bit.platformer.level.entity.filler.file;
 
 public class InvalidLevelSizeException extends RuntimeException {
     public InvalidLevelSizeException() {
