@@ -4,17 +4,13 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Interpolation;
-import com.badlogic.gdx.math.Rectangle;
 import ru.mipt.bit.platformer.util.TileMovement;
 
 import ru.mipt.bit.platformer.UI.TextureProvider;
@@ -29,15 +25,14 @@ import ru.mipt.bit.platformer.event.PollRegistry;
 import ru.mipt.bit.platformer.event.DefaultPollRegistry;
 import ru.mipt.bit.platformer.event.Event;
 import ru.mipt.bit.platformer.level.entity.Level;
+import ru.mipt.bit.platformer.level.entity.LevelFillerExecutor;
 import ru.mipt.bit.platformer.level.entity.filler.LevelFiller;
-import ru.mipt.bit.platformer.level.entity.filler.file.FromFileLevelFiller;
 import ru.mipt.bit.platformer.closer.Closer;
 import ru.mipt.bit.platformer.level.ui.LevelGraphicalObject;
 import ru.mipt.bit.platformer.movement.entity.DefaultMoveManager;
 import ru.mipt.bit.platformer.UI.BatchDrawer;
 import ru.mipt.bit.platformer.UI.GraphicalObjectProducer;
 import ru.mipt.bit.platformer.tank.entity.DefaultTank;
-import ru.mipt.bit.platformer.tank.entity.Tank;
 import ru.mipt.bit.platformer.tank.ui.TankGraphicalObjectProducer;
 import ru.mipt.bit.platformer.obstacle.entity.Tree;
 import ru.mipt.bit.platformer.obstacle.ui.TreeGraphicalObjectProducer;
@@ -45,14 +40,9 @@ import ru.mipt.bit.platformer.entity.Object;
 import ru.mipt.bit.platformer.entity.Updatable;
 import ru.mipt.bit.platformer.event.EventListener;
 
-import static com.badlogic.gdx.Input.Keys.*;
 import static com.badlogic.gdx.graphics.GL20.GL_COLOR_BUFFER_BIT;
-import static com.badlogic.gdx.math.MathUtils.isEqual;
 import static ru.mipt.bit.platformer.util.GdxGameUtils.*;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -139,29 +129,10 @@ public class GameDesktopLauncher implements ApplicationListener {
 
         // levelFillerProvider: use arg - what lvl init strategy(file or random)
 
-        FileReader levelFile = null;
-        LevelFiller fromFileLevelFiller = null;
+        LevelFillerExecutor lvlFillerExec = new LevelFillerExecutor(new DefaultMoveManager(MOVEMENT_SPEED),
+                LevelFillerExecutor.FROM_FILE);
 
-        try {
-            levelFile = new FileReader("src/main/resources/level.txt");
-
-            fromFileLevelFiller = new FromFileLevelFiller(
-                    new BufferedReader(levelFile), new DefaultMoveManager(MOVEMENT_SPEED));
-        } catch (IOException e) {
-            e.printStackTrace();
-
-            return;
-        }
-
-        fromFileLevelFiller.fillLevel(gameLevel);
-
-        try {
-            levelFile.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-
-            return;
-        }
+        lvlFillerExec.fillLevel(gameLevel);
 
         // ---
 
@@ -179,7 +150,9 @@ public class GameDesktopLauncher implements ApplicationListener {
 
         pollRegistry = new DefaultPollRegistry();
 
-        for (Object gameObj : fromFileLevelFiller.fetchedObjects()) {
+        LevelFiller lvlFiller = lvlFillerExec.getFiller();
+
+        for (Object gameObj : lvlFiller.fetchedObjects()) {
             if (!(gameObj instanceof Updatable)) { // полагаем, что ко всем объектам, у которых есть состояние, должен
                                                    // быть привязан eventListener
                 continue;
@@ -189,19 +162,20 @@ public class GameDesktopLauncher implements ApplicationListener {
                     false);
             pollRegistry.registerEventListener(gameObj, listenerForObject);
         }
-        EventListener listenerForPlayer = ListenerProvider.provideListener(fromFileLevelFiller.getPlayerObject(),
+        EventListener listenerForPlayer = ListenerProvider.provideListener(lvlFiller.getPlayerObject(),
                 true);
-        pollRegistry.registerEventListener(fromFileLevelFiller.getPlayerObject(), listenerForPlayer);
+        pollRegistry.registerEventListener(lvlFiller.getPlayerObject(), listenerForPlayer);
 
         // --
 
         eventInterpreter = new EventInterpreter();
 
-        for (Object gameObj : fromFileLevelFiller.fetchedObjects()) {
+        // задаем способ интерпретации событий для каждого из объектов
+        for (Object gameObj : lvlFiller.fetchedObjects()) {
             eventInterpreter.addMappingForObject(gameObj,
                     new RandomEventToCmdMapping(gameLevel).getEventToCmdMapping());
         }
-        eventInterpreter.addMappingForObject(fromFileLevelFiller.getPlayerObject(),
+        eventInterpreter.addMappingForObject(lvlFiller.getPlayerObject(),
                 new KeyboardEventToCmdMapping(gameLevel).getEventToCmdMapping());
 
         // Texture decodes an image file and loads it into GPU memory, it represents a
