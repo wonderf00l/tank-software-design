@@ -4,6 +4,7 @@ import static ru.mipt.bit.platformer.util.GdxGameUtils.createBoundingRectangle;
 
 import ru.mipt.bit.platformer.UI.Displayable;
 import ru.mipt.bit.platformer.UI.Drawer;
+import ru.mipt.bit.platformer.entity.Object;
 import ru.mipt.bit.platformer.util.TileMovement;
 import ru.mipt.bit.platformer.tank.entity.Tank;
 
@@ -51,5 +52,9 @@ public class TankGraphicalObject implements Displayable {
 
     public TextureRegion getTexture() {
         return textureRegion;
+    }
+
+    public Object getObject() {
+        return tank;
     }
 }

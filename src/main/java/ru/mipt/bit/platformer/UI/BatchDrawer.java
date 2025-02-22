@@ -2,9 +2,9 @@ package ru.mipt.bit.platformer.UI;
 
 import static ru.mipt.bit.platformer.util.GdxGameUtils.drawTextureRegionUnscaled;
 
-import ru.mipt.bit.platformer.closer.Closable;
-
 import com.badlogic.gdx.graphics.g2d.Batch;
+
+import ru.mipt.bit.platformer.closer.Closable;
 
 public class BatchDrawer implements Drawer, Closable {
     private Batch batch;

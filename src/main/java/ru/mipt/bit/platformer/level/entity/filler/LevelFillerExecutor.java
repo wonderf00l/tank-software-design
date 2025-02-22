@@ -1,10 +1,11 @@
-package ru.mipt.bit.platformer.level.entity;
+package ru.mipt.bit.platformer.level.entity.filler;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-import ru.mipt.bit.platformer.level.entity.filler.LevelFiller;
+import ru.mipt.bit.platformer.level.entity.Level;
+
 import ru.mipt.bit.platformer.level.entity.filler.file.FromFileLevelFiller;
 import ru.mipt.bit.platformer.level.entity.filler.random.RandomLevelFiller;
 import ru.mipt.bit.platformer.movement.entity.MoveManager;

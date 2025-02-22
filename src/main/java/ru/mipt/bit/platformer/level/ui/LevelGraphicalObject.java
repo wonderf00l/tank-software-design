@@ -1,13 +1,16 @@
 package ru.mipt.bit.platformer.level.ui;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Predicate;
+import java.util.Collection;
 
 import com.badlogic.gdx.maps.MapRenderer;
 
 import ru.mipt.bit.platformer.level.entity.LevelListener;
 
 import ru.mipt.bit.platformer.entity.Object;
-
+import ru.mipt.bit.platformer.UI.DecoratorProducer;
 import ru.mipt.bit.platformer.UI.Displayable;
 import ru.mipt.bit.platformer.UI.Drawer;
 import ru.mipt.bit.platformer.UI.GraphicalObjectProducer;
@@ -54,5 +57,29 @@ public class LevelGraphicalObject implements LevelListener {
 
     public void notifyAboutObjectDeletion(Object object) {
         levelObjects.remove(object);
+    }
+
+    public void applyGraphicDecorators(HashMap<DecoratorProducer, Predicate<Object>> applyStrategy) {
+        for (Map.Entry<DecoratorProducer, Predicate<Object>> entry : applyStrategy.entrySet()) {
+            for (Map.Entry<Object, Displayable> objsEntry : levelObjects.entrySet()) {
+                Predicate<Object> shouldApplyDeco = entry.getValue();
+
+                Object obj = objsEntry.getKey();
+
+                if (!shouldApplyDeco.test(obj)) {
+                    continue;
+                }
+
+                Displayable graphObj = objsEntry.getValue();
+
+                DecoratorProducer decoProd = entry.getKey();
+
+                graphObj = (Displayable) decoProd.produce(graphObj);
+            }
+        }
+    }
+
+    public Collection<Displayable> getGraphicalObjects() {
+        return levelObjects.values();
     }
 }

@@ -6,17 +6,15 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Interpolation;
 import ru.mipt.bit.platformer.util.TileMovement;
-
-import ru.mipt.bit.platformer.UI.TextureProvider;
-import ru.mipt.bit.platformer.closer.DefaultCloser;
-import ru.mipt.bit.platformer.closer.TilledMapClosable;
 import ru.mipt.bit.platformer.command.Command;
+import ru.mipt.bit.platformer.command.CommandProducer;
 import ru.mipt.bit.platformer.event.ListenerProvider;
 import ru.mipt.bit.platformer.event.keyboard.KeyboardEventToCmdMapping;
 import ru.mipt.bit.platformer.event.random.RandomEventToCmdMapping;
@@ -25,13 +23,13 @@ import ru.mipt.bit.platformer.event.PollRegistry;
 import ru.mipt.bit.platformer.event.DefaultPollRegistry;
 import ru.mipt.bit.platformer.event.Event;
 import ru.mipt.bit.platformer.level.entity.Level;
-import ru.mipt.bit.platformer.level.entity.LevelFillerExecutor;
 import ru.mipt.bit.platformer.level.entity.filler.LevelFiller;
-import ru.mipt.bit.platformer.closer.Closer;
+import ru.mipt.bit.platformer.level.entity.filler.LevelFillerExecutor;
 import ru.mipt.bit.platformer.level.ui.LevelGraphicalObject;
 import ru.mipt.bit.platformer.movement.entity.DefaultMoveManager;
 import ru.mipt.bit.platformer.UI.BatchDrawer;
 import ru.mipt.bit.platformer.UI.GraphicalObjectProducer;
+import ru.mipt.bit.platformer.UI.TextureProvider;
 import ru.mipt.bit.platformer.tank.entity.DefaultTank;
 import ru.mipt.bit.platformer.tank.ui.TankGraphicalObjectProducer;
 import ru.mipt.bit.platformer.obstacle.entity.Tree;
@@ -39,6 +37,10 @@ import ru.mipt.bit.platformer.obstacle.ui.TreeGraphicalObjectProducer;
 import ru.mipt.bit.platformer.entity.Object;
 import ru.mipt.bit.platformer.entity.Updatable;
 import ru.mipt.bit.platformer.event.EventListener;
+import ru.mipt.bit.platformer.closer.ClosableTexture;
+import ru.mipt.bit.platformer.closer.Closer;
+import ru.mipt.bit.platformer.closer.DefaultCloser;
+import ru.mipt.bit.platformer.closer.TilledMapClosable;
 
 import static com.badlogic.gdx.graphics.GL20.GL_COLOR_BUFFER_BIT;
 import static ru.mipt.bit.platformer.util.GdxGameUtils.*;
@@ -84,6 +86,19 @@ public class GameDesktopLauncher implements ApplicationListener {
     @Override
     public void create() {
 
+        // graphic decorator interface - Displayable getWrapped()
+        // graphic deco can be toggable(on/off), another objs can be too
+
+        // graphicDecosCotanier == []Decorator
+        // .addDeco()
+        // apply to graphic obj(obj)
+
+        // L: event - from keyboard, eventAcceptor - player, toggleCmd
+
+        // toggleCmd: preserves graphic level
+
+        // cfg opt -> use health or not
+
         // mapRenderer, batch, BatchDrawer; classes: graphProducer - displayStrategy ->
         // graph lvl
         // new logical lvl, partly init logical lvl, subscribe graph level to logical
@@ -102,15 +117,20 @@ public class GameDesktopLauncher implements ApplicationListener {
         TiledMapTileLayer groundLayer = getSingleLayer(level);
         tileMovement = new TileMovement(groundLayer, Interpolation.smooth);
 
-        TextureProvider textureProvider = new TextureProvider();
-        closer.addClosable(textureProvider);
+        TextureRegion tankTextureRegion = TextureProvider
+                .getTextureRegionFromImgPath(TextureProvider.tankTextureImgPath);
+        closer.addClosable(new ClosableTexture(tankTextureRegion.getTexture()));
 
         GraphicalObjectProducer tankGraphicsProducer = new TankGraphicalObjectProducer(
-                textureProvider.getTextureRegion(TextureProvider.tankTextureImgPath),
+                tankTextureRegion,
                 tileMovement);
 
+        TextureRegion treeTextureRegion = TextureProvider
+                .getTextureRegionFromImgPath(TextureProvider.treeTextureImgPath);
+        closer.addClosable(new ClosableTexture(treeTextureRegion.getTexture()));
+
         GraphicalObjectProducer treeGraphicsProducer = new TreeGraphicalObjectProducer(
-                textureProvider.getTextureRegion(TextureProvider.treeTextureImgPath),
+                treeTextureRegion,
                 groundLayer);
 
         HashMap<Class<?>, GraphicalObjectProducer> displayStrategy = new HashMap<>();
@@ -121,6 +141,10 @@ public class GameDesktopLauncher implements ApplicationListener {
         closer.addClosable(batchDrawer);
 
         levelGraphic = new LevelGraphicalObject(levelRenderer, batchDrawer, displayStrategy);
+
+        // create decoStrat
+
+        // applyDecos
 
         // create logical level, do sub
 
@@ -152,18 +176,16 @@ public class GameDesktopLauncher implements ApplicationListener {
 
         LevelFiller lvlFiller = lvlFillerExec.getFiller();
 
+        EventListener listenerForObject = ListenerProvider.provideListener(false);
         for (Object gameObj : lvlFiller.fetchedObjects()) {
             if (!(gameObj instanceof Updatable)) { // полагаем, что ко всем объектам, у которых есть состояние, должен
                                                    // быть привязан eventListener
                 continue;
             }
 
-            EventListener listenerForObject = ListenerProvider.provideListener(gameObj,
-                    false);
             pollRegistry.registerEventListener(gameObj, listenerForObject);
         }
-        EventListener listenerForPlayer = ListenerProvider.provideListener(lvlFiller.getPlayerObject(),
-                true);
+        EventListener listenerForPlayer = ListenerProvider.provideListener(true);
         pollRegistry.registerEventListener(lvlFiller.getPlayerObject(), listenerForPlayer);
 
         // --
@@ -171,9 +193,11 @@ public class GameDesktopLauncher implements ApplicationListener {
         eventInterpreter = new EventInterpreter();
 
         // задаем способ интерпретации событий для каждого из объектов
+
+        HashMap<Integer, CommandProducer> mapping = new RandomEventToCmdMapping(gameLevel).getEventToCmdMapping();
+
         for (Object gameObj : lvlFiller.fetchedObjects()) {
-            eventInterpreter.addMappingForObject(gameObj,
-                    new RandomEventToCmdMapping(gameLevel).getEventToCmdMapping());
+            eventInterpreter.addMappingForObject(gameObj, mapping);
         }
         eventInterpreter.addMappingForObject(lvlFiller.getPlayerObject(),
                 new KeyboardEventToCmdMapping(gameLevel).getEventToCmdMapping());

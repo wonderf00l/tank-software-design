@@ -1,6 +1,7 @@
 package ru.mipt.bit.platformer.obstacle.ui;
 
 import ru.mipt.bit.platformer.UI.Drawer;
+import ru.mipt.bit.platformer.entity.Object;
 import ru.mipt.bit.platformer.obstacle.entity.Tree;
 
 import static ru.mipt.bit.platformer.util.GdxGameUtils.createBoundingRectangle;
@@ -45,5 +46,9 @@ public class TreeGraphicalObject implements Displayable {
 
     public TextureRegion getTexture() {
         return textureRegion;
+    }
+
+    public Object getObject() {
+        return tree;
     }
 }

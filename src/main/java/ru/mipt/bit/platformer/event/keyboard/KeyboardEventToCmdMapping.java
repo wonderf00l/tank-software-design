@@ -7,6 +7,8 @@ import java.util.HashMap;
 import ru.mipt.bit.platformer.level.entity.Level;
 import ru.mipt.bit.platformer.command.CommandProducer;
 import ru.mipt.bit.platformer.command.move.MoveCommandProducer;
+import ru.mipt.bit.platformer.command.toggle.Toggle;
+import ru.mipt.bit.platformer.command.toggle.ToggleCommandProducer;
 import ru.mipt.bit.platformer.entity.Direction;
 
 public class KeyboardEventToCmdMapping {
@@ -23,7 +25,10 @@ public class KeyboardEventToCmdMapping {
     }
 
     private void initMapping() {
-        mapping.put(Keys.W, new MoveCommandProducer(level, Direction.UP));
+        mapping.put(Keys.W, new MoveCommandProducer(level, Direction.UP)); // т.к. команды применяются к разным
+                                                                           // объектам, задаем CommandProducer,
+                                                                           // конкретный объект будет передан через
+                                                                           // аргмуенты
         mapping.put(Keys.UP, new MoveCommandProducer(level, Direction.UP));
         mapping.put(Keys.A, new MoveCommandProducer(level, Direction.LEFT));
         mapping.put(Keys.LEFT, new MoveCommandProducer(level, Direction.LEFT));
@@ -31,6 +36,7 @@ public class KeyboardEventToCmdMapping {
         mapping.put(Keys.DOWN, new MoveCommandProducer(level, Direction.DOWN));
         mapping.put(Keys.D, new MoveCommandProducer(level, Direction.RIGHT));
         mapping.put(Keys.RIGHT, new MoveCommandProducer(level, Direction.RIGHT));
+        mapping.put(Keys.L, new ToggleCommandProducer());
     }
 
     public HashMap<Integer, CommandProducer> getEventToCmdMapping() {
