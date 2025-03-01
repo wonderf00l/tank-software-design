@@ -6,7 +6,6 @@ import ru.mipt.bit.platformer.entity.Object;
 import ru.mipt.bit.platformer.level.entity.filler.LevelFiller;
 import ru.mipt.bit.platformer.movement.entity.MoveManager;
 import ru.mipt.bit.platformer.obstacle.entity.Tree;
-import ru.mipt.bit.platformer.tank.entity.DefaultTank;
 import ru.mipt.bit.platformer.tank.entity.Tank;
 
 import java.util.ArrayList;
@@ -50,11 +49,11 @@ public class RandomLevelFiller implements LevelFiller {
 
             switch (objType) {
                 case 0, 1:
-                    Tank tank = new DefaultTank(
+                    Tank tank = new Tank(
                             location,
                             Direction.RIGHT,
                             moveManager,
-                            level);
+                            level, Tank.INIT_TANK_HEALTH);
 
                     level.setNewObjectOnLevel(tank, location);
 

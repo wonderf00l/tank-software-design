@@ -12,7 +12,6 @@ import ru.mipt.bit.platformer.level.entity.Level;
 import ru.mipt.bit.platformer.level.entity.filler.LevelFiller;
 import ru.mipt.bit.platformer.movement.entity.MoveManager;
 import ru.mipt.bit.platformer.obstacle.entity.Tree;
-import ru.mipt.bit.platformer.tank.entity.DefaultTank;
 import ru.mipt.bit.platformer.tank.entity.Tank;
 
 public class FromFileLevelFiller implements LevelFiller {
@@ -72,11 +71,11 @@ public class FromFileLevelFiller implements LevelFiller {
 
             switch (cellCh) {
                 case PLAYER, TANK:
-                    Tank tank = new DefaultTank(
+                    Tank tank = new Tank(
                             location,
                             Direction.RIGHT,
                             moveManager,
-                            level);
+                            level, Tank.INIT_TANK_HEALTH);
 
                     level.setNewObjectOnLevel(tank, location);
 

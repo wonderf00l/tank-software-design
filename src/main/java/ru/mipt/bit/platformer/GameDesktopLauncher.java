@@ -15,8 +15,9 @@ import com.badlogic.gdx.math.Interpolation;
 import ru.mipt.bit.platformer.util.TileMovement;
 import ru.mipt.bit.platformer.command.Command;
 import ru.mipt.bit.platformer.command.CommandProducer;
-import ru.mipt.bit.platformer.event.ListenerProvider;
+import ru.mipt.bit.platformer.event.keyboard.KeyboardEventListener;
 import ru.mipt.bit.platformer.event.keyboard.KeyboardEventToCmdMapping;
+import ru.mipt.bit.platformer.event.random.RandomEventListener;
 import ru.mipt.bit.platformer.event.random.RandomEventToCmdMapping;
 import ru.mipt.bit.platformer.event.EventInterpreter;
 import ru.mipt.bit.platformer.event.PollRegistry;
@@ -30,7 +31,9 @@ import ru.mipt.bit.platformer.movement.entity.DefaultMoveManager;
 import ru.mipt.bit.platformer.UI.BatchDrawer;
 import ru.mipt.bit.platformer.UI.GraphicalObjectProducer;
 import ru.mipt.bit.platformer.UI.TextureProvider;
-import ru.mipt.bit.platformer.tank.entity.DefaultTank;
+import ru.mipt.bit.platformer.UI.decorator.ApplyDecoratorStrategy;
+import ru.mipt.bit.platformer.UI.decorator.DecoratorProducer;
+import ru.mipt.bit.platformer.tank.entity.Tank;
 import ru.mipt.bit.platformer.tank.ui.TankGraphicalObjectProducer;
 import ru.mipt.bit.platformer.obstacle.entity.Tree;
 import ru.mipt.bit.platformer.obstacle.ui.TreeGraphicalObjectProducer;
@@ -47,6 +50,7 @@ import static ru.mipt.bit.platformer.util.GdxGameUtils.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.function.Predicate;
 
 public class GameDesktopLauncher implements ApplicationListener {
 
@@ -134,7 +138,7 @@ public class GameDesktopLauncher implements ApplicationListener {
                 groundLayer);
 
         HashMap<Class<?>, GraphicalObjectProducer> displayStrategy = new HashMap<>();
-        displayStrategy.put(DefaultTank.class, tankGraphicsProducer);
+        displayStrategy.put(Tank.class, tankGraphicsProducer);
         displayStrategy.put(Tree.class, treeGraphicsProducer);
 
         BatchDrawer batchDrawer = new BatchDrawer(batch);
@@ -158,6 +162,10 @@ public class GameDesktopLauncher implements ApplicationListener {
 
         lvlFillerExec.fillLevel(gameLevel);
 
+        HashMap<DecoratorProducer, Predicate<Object>> applyDecoStrategy = new ApplyDecoratorStrategy().getStrategy();
+
+        levelGraphic.applyGraphicDecorators(applyDecoStrategy);
+
         // ---
 
         /*
@@ -176,31 +184,43 @@ public class GameDesktopLauncher implements ApplicationListener {
 
         LevelFiller lvlFiller = lvlFillerExec.getFiller();
 
-        EventListener listenerForObject = ListenerProvider.provideListener(false);
+        EventListener listenerForObject = new RandomEventListener();
         for (Object gameObj : lvlFiller.fetchedObjects()) {
             if (!(gameObj instanceof Updatable)) { // полагаем, что ко всем объектам, у которых есть состояние, должен
                                                    // быть привязан eventListener
                 continue;
             }
 
-            pollRegistry.registerEventListener(gameObj, listenerForObject);
+            pollRegistry.registerEventListener((Updatable) gameObj, listenerForObject);
         }
-        EventListener listenerForPlayer = ListenerProvider.provideListener(true);
-        pollRegistry.registerEventListener(lvlFiller.getPlayerObject(), listenerForPlayer);
 
-        // --
+        pollRegistry.registerEventListener(lvlFiller.getPlayerObject(), new KeyboardEventListener());
+
+        // bind keyboard event listener to graphical level
+
+        EventListener listenerForLevel = new KeyboardEventListener();
+
+        // updatable: eventListener; levelGraphic as updatable because it has state
+
+        pollRegistry.registerEventListener(levelGraphic, listenerForLevel); // poll registry для графики или биндить в
+                                                                            // принципе для java obj?
+
+        KeyboardEventToCmdMapping keyboardCmdMapping = new KeyboardEventToCmdMapping(gameLevel);
 
         eventInterpreter = new EventInterpreter();
 
+        eventInterpreter.addMappingForObject(levelGraphic, keyboardCmdMapping.getEventToCmdMappingForLevel());
+
         // задаем способ интерпретации событий для каждого из объектов
 
-        HashMap<Integer, CommandProducer> mapping = new RandomEventToCmdMapping(gameLevel).getEventToCmdMapping();
+        HashMap<Integer, CommandProducer> randomCmdMapping = new RandomEventToCmdMapping(gameLevel)
+                .getEventToCmdMapping();
 
         for (Object gameObj : lvlFiller.fetchedObjects()) {
-            eventInterpreter.addMappingForObject(gameObj, mapping);
+            eventInterpreter.addMappingForObject(gameObj, randomCmdMapping);
         }
         eventInterpreter.addMappingForObject(lvlFiller.getPlayerObject(),
-                new KeyboardEventToCmdMapping(gameLevel).getEventToCmdMapping());
+                keyboardCmdMapping.getEventToCmdMappingForPlayer());
 
         // Texture decodes an image file and loads it into GPU memory, it represents a
         // native resource
@@ -232,11 +252,13 @@ public class GameDesktopLauncher implements ApplicationListener {
 
         for (ArrayList<Event> listenerEvents : happenedEvents) {
             for (Event event : listenerEvents) {
-                Object eventReceiver = pollRegistry.getEventReceiver(event.whoGot());
+                java.lang.Object eventReceiver = pollRegistry.getEventReceiver(event.whoGot());
 
                 Command cmdCausedByEvent = eventInterpreter.eventToCommandForObject(eventReceiver, event);
 
-                cmdCausedByEvent.exec();
+                if (cmdCausedByEvent != null) {
+                    cmdCausedByEvent.exec();
+                }
             }
         }
 

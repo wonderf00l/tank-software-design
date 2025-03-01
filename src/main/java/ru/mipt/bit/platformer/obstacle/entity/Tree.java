@@ -1,8 +1,9 @@
 package ru.mipt.bit.platformer.obstacle.entity;
 
+import ru.mipt.bit.platformer.entity.Object;
 import com.badlogic.gdx.math.GridPoint2;
 
-public class Tree implements Obstacle {
+public class Tree implements Object {
 
     private final GridPoint2 location;
 

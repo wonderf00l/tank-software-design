@@ -3,8 +3,6 @@ package ru.mipt.bit.platformer.event;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import ru.mipt.bit.platformer.entity.Object;
-
 // default listeners polling in sync mode
 public class DefaultPollRegistry implements PollRegistry {
     private HashMap<EventListener, Object> registry = new HashMap<>();

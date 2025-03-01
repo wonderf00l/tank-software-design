@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 import ru.mipt.bit.platformer.command.Command;
 import ru.mipt.bit.platformer.command.CommandProducer;
-import ru.mipt.bit.platformer.entity.Object;
 
 // дефолтная реализация интерпретатора событий:
 // каждому объекту назначается свой мапинг событий на команды - возможность гибкой настройки
@@ -23,6 +22,13 @@ public class EventInterpreter {
         HashMap<Integer, CommandProducer> eventInterpretationStrategyForObject = interpretationStrategies.get(gameObj);
 
         CommandProducer cmdProducerForObject = eventInterpretationStrategyForObject.get(event.getType());
+
+        // если мапинг событий на команды для конкретного этого объекта не содержит
+        // данный тип события
+        if (cmdProducerForObject == null) {
+            return null; // возврат null события, на вызывающей стороне проверяем полученную команду
+                         // перед исполнением
+        }
 
         Command cmdForObjectToExecute = cmdProducerForObject.produce(gameObj);
 

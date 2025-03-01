@@ -5,7 +5,6 @@ import ru.mipt.bit.platformer.command.CommandProducer;
 import ru.mipt.bit.platformer.entity.Direction;
 import ru.mipt.bit.platformer.entity.Movable;
 import ru.mipt.bit.platformer.level.entity.Level;
-import ru.mipt.bit.platformer.entity.Object;
 
 public class MoveCommandProducer implements CommandProducer {
 

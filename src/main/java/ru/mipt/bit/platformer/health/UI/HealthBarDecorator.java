@@ -8,10 +8,10 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Disposable;
 
-import ru.mipt.bit.platformer.UI.Decorator;
 import ru.mipt.bit.platformer.UI.Displayable;
 import ru.mipt.bit.platformer.UI.Drawer;
 import ru.mipt.bit.platformer.UI.TextureProvider;
+import ru.mipt.bit.platformer.UI.decorator.Decorator;
 import ru.mipt.bit.platformer.closer.Closable;
 import ru.mipt.bit.platformer.entity.Toggable;
 import ru.mipt.bit.platformer.entity.Healthy;
@@ -26,7 +26,7 @@ public class HealthBarDecorator implements Decorator, Displayable, Toggable, Clo
 
     private Healthy healthyObj;
 
-    private Displayable fullHealthBarObj; // displayable
+    // private Displayable fullHealthBarObj; // displayable
 
     private ArrayList<Disposable> disposables = new ArrayList<>();
 
@@ -34,19 +34,6 @@ public class HealthBarDecorator implements Decorator, Displayable, Toggable, Clo
         wrappedGraphObj = objectToWrap;
 
         healthyObj = (Healthy) wrappedGraphObj.getObject();
-
-        Pixmap fullHealthBarPixmap = TextureProvider.getPixmap(
-                HealthBarGraphicalObject.FULL_HEALTH_BAR_PIXMAP_WIDTH,
-                HealthBarGraphicalObject.HEALTH_BAR_PIXMAP_HEIGHT,
-                Color.RED);
-
-        disposables.add(fullHealthBarPixmap);
-
-        TextureRegion fullHealthTextureRegion = TextureProvider.getTextureRegionFromPixmap(fullHealthBarPixmap);
-
-        disposables.add(fullHealthTextureRegion.getTexture());
-
-        fullHealthBarObj = new HealthBarGraphicalObject(fullHealthTextureRegion, wrappedGraphObj.getRectangle());
     }
 
     public void display(Drawer drawer) {
@@ -59,7 +46,7 @@ public class HealthBarDecorator implements Decorator, Displayable, Toggable, Clo
         Pixmap curHealthBarPixmap = TextureProvider.getPixmap(
                 HealthBarGraphicalObject.getCurHealthBarPixmapWidth(healthyObj.getHealth()),
                 HealthBarGraphicalObject.HEALTH_BAR_PIXMAP_HEIGHT,
-                Color.GREEN);
+                Color.RED);
 
         TextureRegion curHealthTextureRegion = TextureProvider.getTextureRegionFromPixmap(curHealthBarPixmap);
 
@@ -67,11 +54,9 @@ public class HealthBarDecorator implements Decorator, Displayable, Toggable, Clo
                 curHealthTextureRegion,
                 wrappedGraphObj.getRectangle());
 
-        drawer.draw(fullHealthBarObj);
         drawer.draw(curHealthBarObj);
 
-        curHealthBarPixmap.dispose();
-        curHealthTextureRegion.getTexture().dispose();
+        disposables.add(curHealthTextureRegion.getTexture());
     }
 
     public TextureRegion getTexture() {

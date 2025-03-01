@@ -10,10 +10,11 @@ import com.badlogic.gdx.maps.MapRenderer;
 import ru.mipt.bit.platformer.level.entity.LevelListener;
 
 import ru.mipt.bit.platformer.entity.Object;
-import ru.mipt.bit.platformer.UI.DecoratorProducer;
 import ru.mipt.bit.platformer.UI.Displayable;
 import ru.mipt.bit.platformer.UI.Drawer;
 import ru.mipt.bit.platformer.UI.GraphicalObjectProducer;
+import ru.mipt.bit.platformer.UI.decorator.DecoratorProducer;
+import ru.mipt.bit.platformer.closer.Closable;
 
 public class LevelGraphicalObject implements LevelListener {
 
@@ -45,6 +46,13 @@ public class LevelGraphicalObject implements LevelListener {
         }
 
         drawer.end();
+
+        // освобождение промежуточных ресурсов - чтобы не копились
+        for (Displayable graphObj : levelObjects.values()) {
+            if (graphObj instanceof Closable) {
+                ((Closable) graphObj).close();
+            }
+        }
     }
 
     public void notifyAboutObjectCreation(Object object) {
@@ -74,7 +82,9 @@ public class LevelGraphicalObject implements LevelListener {
 
                 DecoratorProducer decoProd = entry.getKey();
 
-                graphObj = (Displayable) decoProd.produce(graphObj);
+                Displayable decoratedGraphicalObj = (Displayable) decoProd.produce(graphObj);
+
+                levelObjects.put(obj, decoratedGraphicalObj);
             }
         }
     }

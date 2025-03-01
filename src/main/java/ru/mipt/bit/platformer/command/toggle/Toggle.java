@@ -1,8 +1,8 @@
 package ru.mipt.bit.platformer.command.toggle;
 
 import ru.mipt.bit.platformer.level.ui.LevelGraphicalObject;
-import ru.mipt.bit.platformer.UI.Decorator;
 import ru.mipt.bit.platformer.UI.Displayable;
+import ru.mipt.bit.platformer.UI.decorator.Decorator;
 import ru.mipt.bit.platformer.command.Command;
 import ru.mipt.bit.platformer.health.UI.HealthBarDecorator;
 
