@@ -25,7 +25,7 @@ public class KeyboardEventToCmdMapping {
     // т.к. команды применяются к разным
     // объектам, задаем CommandProducer,
     // конкретный объект будет передан через
-    // аргмуенты
+    // аргументы
     private void initCmdMappingForPlayer(HashMap<Integer, CommandProducer> mapping) {
         mapping.put(Keys.W, new MoveCommandProducer(level, Direction.UP));
         mapping.put(Keys.UP, new MoveCommandProducer(level, Direction.UP));

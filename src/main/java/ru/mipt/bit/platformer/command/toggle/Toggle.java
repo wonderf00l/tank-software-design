@@ -22,6 +22,8 @@ public class Toggle implements Command {
 
             Decorator deco = null;
 
+            // разворачивание декораторов(если несколько - здоровье, ники etc), попытка
+            // нахождения нужного декоратора
             while (graphicalObj instanceof Decorator &&
                     !(graphicalObj instanceof HealthBarDecorator)) {
 

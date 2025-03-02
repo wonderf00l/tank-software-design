@@ -46,6 +46,7 @@ public class HealthBarGraphicalObject implements Displayable {
     }
 
     public Object getObject() {
-        return null; // пока null для getObj(), позже разграничить
+        return null; // пока null для getObj(), позже разграничить на GraphObj с этим api и
+                     // Displayable
     }
 }

@@ -26,8 +26,7 @@ public class RandomEventToCmdMapping {
         mapping.put(RandomEventListener.LEFT, new MoveCommandProducer(level, Direction.LEFT));
         mapping.put(RandomEventListener.DOWN, new MoveCommandProducer(level, Direction.DOWN));
         mapping.put(RandomEventListener.RIGHT, new MoveCommandProducer(level, Direction.RIGHT));
-        // mapping.put(RandomEventListener.SHOOT, new ShootCommandProducer(level)); //
-        // comment для отладки
+        mapping.put(RandomEventListener.SHOOT, new ShootCommandProducer(level)); //
     }
 
     public HashMap<Integer, CommandProducer> getEventToCmdMapping() {

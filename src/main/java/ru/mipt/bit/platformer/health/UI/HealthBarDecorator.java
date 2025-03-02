@@ -17,16 +17,13 @@ import ru.mipt.bit.platformer.entity.Toggable;
 import ru.mipt.bit.platformer.entity.Healthy;
 import ru.mipt.bit.platformer.entity.Object;
 
-// если нужны будут декораторы не над graphicalOBj, а над displayable(без метода getObj), создаются отдельно
 public class HealthBarDecorator implements Decorator, Displayable, Toggable, Closable {
 
     private boolean isToggled = false;
 
-    private Displayable wrappedGraphObj; // graphicalOBJ - displayalbe + getOBj() api
+    private Displayable wrappedGraphObj;
 
     private Healthy healthyObj;
-
-    // private Displayable fullHealthBarObj; // displayable
 
     private ArrayList<Disposable> disposables = new ArrayList<>();
 

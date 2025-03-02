@@ -11,7 +11,6 @@ import ru.mipt.bit.platformer.tank.entity.Tank;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 
-// desktop UI, CLI, etc
 public class TankGraphicalObject implements Displayable {
 
     public static final String tankTextureImgPath = "images/tank_blue.png";

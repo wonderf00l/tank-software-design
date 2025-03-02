@@ -2,7 +2,6 @@ package ru.mipt.bit.platformer.movement.entity;
 
 import static com.badlogic.gdx.math.MathUtils.clamp;
 
-// del interface, spped as arg
 public class MoveManager {
 
     public static final float MOVEMENT_START = 0f;

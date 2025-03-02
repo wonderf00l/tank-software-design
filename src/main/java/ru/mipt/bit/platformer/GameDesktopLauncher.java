@@ -64,55 +64,97 @@ public class GameDesktopLauncher implements ApplicationListener {
     private MapRenderer levelRenderer;
     private TileMovement tileMovement;
 
-    // private Texture blueTankTexture;
-    // private TextureRegion playerGraphics;
-    // private Rectangle playerRectangle;
-    // // player current position coordinates on level 10x8 grid (e.g. x=0, y=1)
-    // private GridPoint2 playerCoordinates;
-    // // which tile the player want to go next
-    // private GridPoint2 playerDestinationCoordinates;
-    // private float playerMovementProgress = 1f;
-    // private float playerRotation;
+    private Level gameLevel; // логическое представление уровня
 
-    // private Texture greenTreeTexture;
-    // private TextureRegion treeObstacleGraphics;
-    // private GridPoint2 treeObstacleCoordinates = new GridPoint2();
-    // private Rectangle treeObstacleRectangle = new Rectangle();
+    private LevelGraphicalObject levelGraphic; // графическое представление уровня
 
-    private Level gameLevel;
+    private PollRegistry pollRegistry; // registry event listener'ов: keyboard, random etc
 
-    private LevelGraphicalObject levelGraphic;
+    private EventInterpreter eventInterpreter; // интерпретатор событий event listener'ов из poll registry(набор
+                                               // мапингов событий на объекты, производящие команды)
 
-    private PollRegistry pollRegistry;
+    private Closer closer = new DefaultCloser(); // для освобождения ресурсов
 
-    private EventInterpreter eventInterpreter;
+    private HashMap<Class<?>, GraphicalObjectProducer> getDisplayStrategy(TiledMapTileLayer groundLayer) {
+        HashMap<Class<?>, GraphicalObjectProducer> displayStrategy = new HashMap<>();
 
-    private Closer closer = new DefaultCloser();
+        TextureRegion tankTextureRegion = TextureProvider
+                .getTextureRegionFromImgPath(TankGraphicalObject.tankTextureImgPath);
+        closer.addClosable(new ClosableTexture(tankTextureRegion.getTexture()));
+
+        GraphicalObjectProducer tankGraphicsProducer = new TankGraphicalObjectProducer(
+                tankTextureRegion,
+                tileMovement);
+
+        displayStrategy.put(Tank.class, tankGraphicsProducer);
+
+        TextureRegion treeTextureRegion = TextureProvider
+                .getTextureRegionFromImgPath(TreeGraphicalObject.treeTextureImgPath);
+        closer.addClosable(new ClosableTexture(treeTextureRegion.getTexture()));
+
+        GraphicalObjectProducer treeGraphicsProducer = new TreeGraphicalObjectProducer(
+                treeTextureRegion,
+                groundLayer);
+
+        displayStrategy.put(Tree.class, treeGraphicsProducer);
+
+        TextureRegion bulletTextureRegion = TextureProvider
+                .getTextureRegionFromImgPath(BulletGraphicalObject.bulletTextureImgPath);
+        closer.addClosable(new ClosableTexture(bulletTextureRegion.getTexture()));
+
+        GraphicalObjectProducer bulletGraphicsProducer = new BulletGraphicalObjectProducer(
+                bulletTextureRegion,
+                tileMovement);
+
+        displayStrategy.put(Bullet.class, bulletGraphicsProducer);
+
+        return displayStrategy;
+    }
+
+    private void initPollRegistry(LevelFiller lvlFiller) {
+        pollRegistry = new DefaultPollRegistry();
+
+        // привязываем keyboard event listener к танку игрока
+        pollRegistry.registerEventListener(lvlFiller.getPlayerObject(), new KeyboardEventListener());
+
+        // привязываем random event listener к остальным объектам
+        EventListener listenerForObject = new RandomEventListener();
+        for (Object gameObj : lvlFiller.fetchedObjects()) {
+            if (!(gameObj instanceof Updatable)) { // полагаем, что ко всем объектам, у которых есть состояние, должен
+                                                   // быть привязан eventListener(может быть общий для разных объектов)
+                continue;
+            }
+
+            pollRegistry.registerEventListener((Updatable) gameObj, listenerForObject);
+        }
+
+        // привязываем keyboard event listener к граф. представлению уровня
+        EventListener listenerForLevel = new KeyboardEventListener();
+
+        pollRegistry.registerEventListener(levelGraphic, listenerForLevel);
+    }
+
+    private void initEventInterpreter(LevelFiller lvlFiller) {
+        eventInterpreter = new EventInterpreter();
+
+        KeyboardEventToCmdMapping keyboardCmdMapping = new KeyboardEventToCmdMapping(gameLevel);
+
+        // задаем способ интерпретации событий(мапинг события на команду) для
+        // объекта игрока, графики и др объектов
+        eventInterpreter.addMappingForObject(levelGraphic, keyboardCmdMapping.getEventToCmdMappingForLevel());
+
+        HashMap<Integer, CommandProducer> randomCmdMapping = new RandomEventToCmdMapping(gameLevel)
+                .getEventToCmdMapping();
+
+        for (Object gameObj : lvlFiller.fetchedObjects()) {
+            eventInterpreter.addMappingForObject(gameObj, randomCmdMapping);
+        }
+        eventInterpreter.addMappingForObject(lvlFiller.getPlayerObject(),
+                keyboardCmdMapping.getEventToCmdMappingForPlayer());
+    }
 
     @Override
     public void create() {
-
-        // graphic decorator interface - Displayable getWrapped()
-        // graphic deco can be toggable(on/off), another objs can be too
-
-        // graphicDecosCotanier == []Decorator
-        // .addDeco()
-        // apply to graphic obj(obj)
-
-        // L: event - from keyboard, eventAcceptor - player, toggleCmd
-
-        // toggleCmd: preserves graphic level
-
-        // cfg opt -> use health or not
-
-        // mapRenderer, batch, BatchDrawer; classes: graphProducer - displayStrategy ->
-        // graph lvl
-        // new logical lvl, partly init logical lvl, subscribe graph level to logical
-        // lvl
-        // initialize rest logical lvl arrts: widht, height(from groundLayer)
-        // use levelInitializer interface(level Filler) to set objs on locations and
-        // notify listeners(fill graph lvl)
-
         batch = new SpriteBatch();
 
         // load level tiles
@@ -123,150 +165,52 @@ public class GameDesktopLauncher implements ApplicationListener {
         TiledMapTileLayer groundLayer = getSingleLayer(level);
         tileMovement = new TileMovement(groundLayer, Interpolation.smooth);
 
-        TextureRegion tankTextureRegion = TextureProvider
-                .getTextureRegionFromImgPath(TankGraphicalObject.tankTextureImgPath);
-        closer.addClosable(new ClosableTexture(tankTextureRegion.getTexture()));
+        // мапинг логических объектов на их графическое представление
+        HashMap<Class<?>, GraphicalObjectProducer> displayStrategy = getDisplayStrategy(groundLayer);
 
-        GraphicalObjectProducer tankGraphicsProducer = new TankGraphicalObjectProducer(
-                tankTextureRegion,
-                tileMovement);
-
-        TextureRegion treeTextureRegion = TextureProvider
-                .getTextureRegionFromImgPath(TreeGraphicalObject.treeTextureImgPath);
-        closer.addClosable(new ClosableTexture(treeTextureRegion.getTexture()));
-
-        GraphicalObjectProducer treeGraphicsProducer = new TreeGraphicalObjectProducer(
-                treeTextureRegion,
-                groundLayer);
-
-        TextureRegion bulletTextureRegion = TextureProvider
-                .getTextureRegionFromImgPath(BulletGraphicalObject.bulletTextureImgPath);
-        closer.addClosable(new ClosableTexture(bulletTextureRegion.getTexture()));
-
-        GraphicalObjectProducer bulletGraphicsProducer = new BulletGraphicalObjectProducer(
-                bulletTextureRegion,
-                tileMovement);
-
-        HashMap<Class<?>, GraphicalObjectProducer> displayStrategy = new HashMap<>();
-        displayStrategy.put(Tank.class, tankGraphicsProducer);
-        displayStrategy.put(Tree.class, treeGraphicsProducer);
-        displayStrategy.put(Bullet.class, bulletGraphicsProducer);
-
+        // реализация интерфейса Drawer, рисующего Displayable объекты
         BatchDrawer batchDrawer = new BatchDrawer(batch);
         closer.addClosable(batchDrawer);
 
         levelGraphic = new LevelGraphicalObject(levelRenderer, batchDrawer, displayStrategy);
 
-        // create decoStrat
-
-        // applyDecos
-
-        // create logical level, do sub
-
         gameLevel = new Level(groundLayer.getWidth(), groundLayer.getHeight());
         gameLevel.subscribeToLevelEvents(levelGraphic);
 
-        // levelFillerProvider: use arg - what lvl init strategy(file or random)import
-        // ru.mipt.bit.platformer.movement.entity.DefaultMoveManager;
-
+        // инициализация уровня согласно выбранной стратегии наполения
         LevelFillerExecutor lvlFillerExec = new LevelFillerExecutor(LevelFillerExecutor.FROM_FILE);
-
         lvlFillerExec.fillLevel(gameLevel);
 
+        // стратегия применения декораторов к графическим объектам графического
+        // представления уровня
+        // декоратор будет применен к граф. объекту(то есть граф. объект будет обернут в
+        // декоратор), если сработает условие Predicate на логический объект
         HashMap<DecoratorProducer, Predicate<Object>> applyDecoStrategy = new ApplyDecoratorStrategy().getStrategy();
-
         levelGraphic.applyGraphicDecorators(applyDecoStrategy);
-
-        // ---
-
-        /*
-         * 1. fetch objs + player obj from levelFiller
-         * 2. for each obj:
-         * fetch listner form listenerProvider - CREATE SENDER-RECEIVER BOND
-         * 3. register listener for each obj in poll registry
-         * 
-         * 4. create eventCmdMapping -> create default event interpreter
-         * 
-         * 5. registry has been polled -> returned [][]Event
-         * 6. get acceptor(obj) --> invoke cmd producer to producer cmd, exec cmd
-         */
-
-        pollRegistry = new DefaultPollRegistry();
 
         LevelFiller lvlFiller = lvlFillerExec.getFiller();
 
-        EventListener listenerForObject = new RandomEventListener();
-        for (Object gameObj : lvlFiller.fetchedObjects()) {
-            if (!(gameObj instanceof Updatable)) { // полагаем, что ко всем объектам, у которых есть состояние, должен
-                                                   // быть привязан eventListener
-                continue;
-            }
+        initPollRegistry(lvlFiller);
 
-            pollRegistry.registerEventListener((Updatable) gameObj, listenerForObject);
-        }
-
-        pollRegistry.registerEventListener(lvlFiller.getPlayerObject(), new KeyboardEventListener());
-
-        // bind keyboard event listener to graphical level
-
-        EventListener listenerForLevel = new KeyboardEventListener();
-
-        // updatable: eventListener; levelGraphic as updatable because it has state
-
-        pollRegistry.registerEventListener(levelGraphic, listenerForLevel); // poll registry для графики или биндить в
-                                                                            // принципе для java obj?
-
-        KeyboardEventToCmdMapping keyboardCmdMapping = new KeyboardEventToCmdMapping(gameLevel);
-
-        eventInterpreter = new EventInterpreter();
-
-        eventInterpreter.addMappingForObject(levelGraphic, keyboardCmdMapping.getEventToCmdMappingForLevel());
-
-        // задаем способ интерпретации событий для каждого из объектов
-
-        HashMap<Integer, CommandProducer> randomCmdMapping = new RandomEventToCmdMapping(gameLevel)
-                .getEventToCmdMapping();
-
-        for (Object gameObj : lvlFiller.fetchedObjects()) {
-            eventInterpreter.addMappingForObject(gameObj, randomCmdMapping);
-        }
-        eventInterpreter.addMappingForObject(lvlFiller.getPlayerObject(),
-                keyboardCmdMapping.getEventToCmdMappingForPlayer());
-
-        // Texture decodes an image file and loads it into GPU memory, it represents a
-        // native resource
-        // blueTankTexture = new Texture("images/tank_blue.png");
-
-        // // TextureRegion represents Texture portion, there may be many TextureRegion
-        // // instances of the same Texture
-        // playerGraphics = new TextureRegion(blueTankTexture);
-        // playerRectangle = createBoundingRectangle(playerGraphics);
-        // // set player initial position
-        // playerDestinationCoordinates = new GridPoint2(1, 1);
-        // playerCoordinates = new GridPoint2(playerDestinationCoordinates);
-        // playerRotation = 0f;
-
-        // greenTreeTexture = new Texture("images/greenTree.png");
-        // treeObstacleGraphics = new TextureRegion(greenTreeTexture);
-        // treeObstacleCoordinates = new GridPoint2(1, 3);
-        // treeObstacleRectangle = createBoundingRectangle(treeObstacleGraphics);
-        // moveRectangleAtTileCenter(groundLayer, treeObstacleRectangle,
-        // treeObstacleCoordinates);
+        initEventInterpreter(lvlFiller);
     }
 
     @Override
     public void render() {
         clearScreen();
 
-        // execCmds()
         ArrayList<ArrayList<Event>> happenedEvents = pollRegistry.pollEventListeners();
 
         for (ArrayList<Event> listenerEvents : happenedEvents) {
             for (Event event : listenerEvents) {
+                // определяем получателя события по event listener'у(содержится в событии как
+                // адресант события)
                 java.lang.Object eventReceiver = pollRegistry.getEventReceiver(event.whoGot());
 
                 Command cmdCausedByEvent = eventInterpreter.eventToCommandForObject(eventReceiver, event);
 
+                // если событие удалось интерпретировать для данного получателя, исполняем
+                // нужную команду
                 if (cmdCausedByEvent != null) {
                     cmdCausedByEvent.exec();
                 }
@@ -279,75 +223,6 @@ public class GameDesktopLauncher implements ApplicationListener {
         gameLevel.update(deltaTime);
 
         levelGraphic.render();
-
-        // if (Gdx.input.isKeyPressed(UP) || Gdx.input.isKeyPressed(W)) {
-        // if (isEqual(playerMovementProgress, 1f)) {
-        // // check potential player destination for collision with obstacles
-        // if (!treeObstacleCoordinates.equals(incrementedY(playerCoordinates))) {
-        // playerDestinationCoordinates.y++;
-        // playerMovementProgress = 0f;
-        // }
-        // playerRotation = 90f;
-        // }
-        // }
-        // if (Gdx.input.isKeyPressed(LEFT) || Gdx.input.isKeyPressed(A)) {
-        // if (isEqual(playerMovementProgress, 1f)) {
-        // if (!treeObstacleCoordinates.equals(decrementedX(playerCoordinates))) {
-        // playerDestinationCoordinates.x--;
-        // playerMovementProgress = 0f;
-        // }
-        // playerRotation = -180f;
-        // }
-        // }
-        // if (Gdx.input.isKeyPressed(DOWN) || Gdx.input.isKeyPressed(S)) {
-        // if (isEqual(playerMovementProgress, 1f)) {
-        // if (!treeObstacleCoordinates.equals(decrementedY(playerCoordinates))) {
-        // playerDestinationCoordinates.y--;
-        // playerMovementProgress = 0f;
-        // }
-        // playerRotation = -90f;
-        // }
-        // }
-        // if (Gdx.input.isKeyPressed(RIGHT) || Gdx.input.isKeyPressed(D)) {
-        // if (isEqual(playerMovementProgress, 1f)) {
-        // if (!treeObstacleCoordinates.equals(incrementedX(playerCoordinates))) {
-        // playerDestinationCoordinates.x++;
-        // playerMovementProgress = 0f;
-        // }
-        // playerRotation = 0f;
-        // }
-        // }
-
-        // // calculate interpolated player screen coordinates
-        // tileMovement.moveRectangleBetweenTileCenters(playerRectangle,
-        // playerCoordinates, playerDestinationCoordinates, playerMovementProgress);
-
-        // // moveManager - прогресс движения с ходом времени
-        // playerMovementProgress = continueProgress(playerMovementProgress, deltaTime,
-        // MOVEMENT_SPEED);
-        // if (isEqual(playerMovementProgress, 1f)) { //
-        // moveManager.isMovementFinished() } { return progress ==
-        // // MOVEMENT_DONE(1) }
-        // // record that the player has reached his/her destination
-        // playerCoordinates.set(playerDestinationCoordinates);
-        // }
-
-        // // render each tile of the level
-        // levelRenderer.render();
-
-        // // start recording all drawing commands
-        // batch.begin();
-
-        // // render player
-        // drawTextureRegionUnscaled(batch, playerGraphics, playerRectangle,
-        // playerRotation);
-
-        // // render tree obstacle
-        // drawTextureRegionUnscaled(batch, treeObstacleGraphics, treeObstacleRectangle,
-        // 0f);
-
-        // // submit all drawing requests
-        // batch.end();
     }
 
     @Override
@@ -372,13 +247,6 @@ public class GameDesktopLauncher implements ApplicationListener {
 
     @Override
     public void dispose() {
-        // dispose of all the native resources (classes which implement
-        // com.badlogic.gdx.utils.Closable)
-        // greenTreeTexture.dispose();
-        // blueTankTexture.dispose();
-        // level.dispose();
-        // batch.dispose();
-
         closer.close();
     }
 

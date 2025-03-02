@@ -16,7 +16,7 @@ public class MoveCommandProducer implements CommandProducer {
         objDirection = direction;
     }
 
-    // принимаем Object, чтобы рабоать и с графическими объектами
+    // принимаем java.lang.Object, чтобы рабоать и с графическими объектами
     public Command produce(Object cmdExecutor) {
         return new Move((Movable) cmdExecutor, objDirection, level);
     }
