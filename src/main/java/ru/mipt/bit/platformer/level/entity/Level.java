@@ -51,15 +51,22 @@ public class Level {
         return objectsLocations.containsKey(location);
     }
 
-    // api ниже используется объектами уровня
+    public Object getObjectOnLocation(GridPoint2 location) {
+        return objectsLocations.get(location);
+    }
 
-    // изменение позиции
-    public void setObjectOnLocation(Object obj, GridPoint2 location) {
-        if (isLocationOccupied(location)) {
-            return;
-        }
-
+    private void setObjectOnLocation(Object obj, GridPoint2 location) {
         objectsLocations.put(location, obj);
+    }
+
+    private void removeObjectFromLocation(GridPoint2 location) {
+        objectsLocations.remove(location);
+    }
+
+    // используется объектами уровня
+    public void replaceObject(Object obj, GridPoint2 curLocation, GridPoint2 destLocation) {
+        removeObjectFromLocation(curLocation);
+        setObjectOnLocation(obj, destLocation);
     }
 
     public void bookLocation(GridPoint2 location) {
@@ -89,11 +96,14 @@ public class Level {
     public void deleteObjectFromLevel(GridPoint2 location) {
         Object obj = objectsLocations.get(location);
 
-        objectsLocations.remove(location);
+        bookedLocations.remove(location);
+        removeObjectFromLocation(location);
 
         for (LevelListener subscriber : subscribers) {
             subscriber.notifyAboutObjectDeletion(obj);
         }
+
+        removeObjectFromLocation(location);
     }
 
     public int getWidth() {

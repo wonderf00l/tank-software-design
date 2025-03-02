@@ -14,6 +14,8 @@ import com.badlogic.gdx.math.Rectangle;
 // desktop UI, CLI, etc
 public class TankGraphicalObject implements Displayable {
 
+    public static final String tankTextureImgPath = "images/tank_blue.png";
+
     private TextureRegion textureRegion;
 
     private Rectangle tankRectangle;

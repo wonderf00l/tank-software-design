@@ -3,7 +3,7 @@ package ru.mipt.bit.platformer.command.move;
 import com.badlogic.gdx.math.GridPoint2;
 
 import ru.mipt.bit.platformer.command.Command;
-import ru.mipt.bit.platformer.entity.Direction;
+import ru.mipt.bit.platformer.direction.Direction;
 import ru.mipt.bit.platformer.entity.Movable;
 import ru.mipt.bit.platformer.level.entity.Level;
 

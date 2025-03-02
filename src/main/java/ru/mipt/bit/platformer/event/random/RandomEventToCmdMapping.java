@@ -4,7 +4,8 @@ import java.util.HashMap;
 
 import ru.mipt.bit.platformer.command.CommandProducer;
 import ru.mipt.bit.platformer.command.move.MoveCommandProducer;
-import ru.mipt.bit.platformer.entity.Direction;
+import ru.mipt.bit.platformer.command.shoot.ShootCommandProducer;
+import ru.mipt.bit.platformer.direction.Direction;
 import ru.mipt.bit.platformer.level.entity.Level;
 
 public class RandomEventToCmdMapping {
@@ -25,6 +26,8 @@ public class RandomEventToCmdMapping {
         mapping.put(RandomEventListener.LEFT, new MoveCommandProducer(level, Direction.LEFT));
         mapping.put(RandomEventListener.DOWN, new MoveCommandProducer(level, Direction.DOWN));
         mapping.put(RandomEventListener.RIGHT, new MoveCommandProducer(level, Direction.RIGHT));
+        // mapping.put(RandomEventListener.SHOOT, new ShootCommandProducer(level)); //
+        // comment для отладки
     }
 
     public HashMap<Integer, CommandProducer> getEventToCmdMapping() {

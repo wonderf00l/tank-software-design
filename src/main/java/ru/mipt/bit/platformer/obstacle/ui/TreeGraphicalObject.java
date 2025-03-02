@@ -16,6 +16,8 @@ import ru.mipt.bit.platformer.UI.Displayable;
 
 public class TreeGraphicalObject implements Displayable {
 
+    public static final String treeTextureImgPath = "images/greenTree.png";
+
     private TextureRegion textureRegion;
 
     private Rectangle treeRectangle;

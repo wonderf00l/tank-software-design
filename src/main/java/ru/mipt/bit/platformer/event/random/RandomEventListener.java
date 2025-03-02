@@ -12,9 +12,10 @@ public class RandomEventListener implements EventListener {
     public static final int LEFT = 1;
     public static final int DOWN = 2;
     public static final int RIGHT = 3;
+    public static final int SHOOT = 4;
 
     private static final int EVENT_GEN_FACTOR = 20;
-    private static final int EVENT_COUNT = 4;
+    private static final int EVENT_COUNT = 5;
 
     private Random rand = new Random();
 

@@ -1,10 +1,9 @@
 package ru.mipt.bit.platformer.level.entity.filler.random;
 
 import ru.mipt.bit.platformer.level.entity.Level;
-import ru.mipt.bit.platformer.entity.Direction;
+import ru.mipt.bit.platformer.direction.Direction;
 import ru.mipt.bit.platformer.entity.Object;
 import ru.mipt.bit.platformer.level.entity.filler.LevelFiller;
-import ru.mipt.bit.platformer.movement.entity.MoveManager;
 import ru.mipt.bit.platformer.obstacle.entity.Tree;
 import ru.mipt.bit.platformer.tank.entity.Tank;
 
@@ -15,20 +14,14 @@ import com.badlogic.gdx.math.GridPoint2;
 
 public class RandomLevelFiller implements LevelFiller {
 
-    private static final int OBJECTS_TYPE_QUANTITY = 3;
+    private static final int OBJECTS_TYPE_QUANTITY = 2;
     private static final int OBJECTS_GEN_FACTOR = 5;
-
+    
     private Random rand = new Random();
-
-    private MoveManager moveManager;
 
     private ArrayList<Object> fetchedObjects = new ArrayList<>();
 
     private Object objControlledByPlayer;
-
-    public RandomLevelFiller(MoveManager moveManager) {
-        this.moveManager = moveManager;
-    }
 
     public void fillLevel(Level level) {
         for (int y = 0; y < level.getHeight(); y++) {
@@ -48,16 +41,16 @@ public class RandomLevelFiller implements LevelFiller {
             GridPoint2 location = new GridPoint2(x, y);
 
             switch (objType) {
-                case 0, 1:
+                case 0:
                     Tank tank = new Tank(
                             location,
                             Direction.RIGHT,
-                            moveManager,
+                            Tank.TANK_MOVEMENT_SPEED,
                             level, Tank.INIT_TANK_HEALTH);
 
-                    level.setNewObjectOnLevel(tank, location);
+                    level.setNewObjectOnLevel(tank, location.cpy());
 
-                    if (objType == 1) {
+                    if (objControlledByPlayer == null) {
                         objControlledByPlayer = tank;
                         break;
                     }

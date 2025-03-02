@@ -6,9 +6,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class TextureProvider {
-    public static final String tankTextureImgPath = "images/tank_blue.png";
-    public static final String treeTextureImgPath = "images/greenTree.png";
-
     public static TextureRegion getTextureRegionFromImgPath(String imgPath) {
         return new TextureRegion(new Texture(imgPath));
     }

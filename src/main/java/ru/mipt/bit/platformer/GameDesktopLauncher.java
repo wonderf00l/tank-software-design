@@ -27,16 +27,20 @@ import ru.mipt.bit.platformer.level.entity.Level;
 import ru.mipt.bit.platformer.level.entity.filler.LevelFiller;
 import ru.mipt.bit.platformer.level.entity.filler.LevelFillerExecutor;
 import ru.mipt.bit.platformer.level.ui.LevelGraphicalObject;
-import ru.mipt.bit.platformer.movement.entity.DefaultMoveManager;
 import ru.mipt.bit.platformer.UI.BatchDrawer;
 import ru.mipt.bit.platformer.UI.GraphicalObjectProducer;
 import ru.mipt.bit.platformer.UI.TextureProvider;
 import ru.mipt.bit.platformer.UI.decorator.ApplyDecoratorStrategy;
 import ru.mipt.bit.platformer.UI.decorator.DecoratorProducer;
+import ru.mipt.bit.platformer.bullet.entity.Bullet;
 import ru.mipt.bit.platformer.tank.entity.Tank;
+import ru.mipt.bit.platformer.tank.ui.TankGraphicalObject;
 import ru.mipt.bit.platformer.tank.ui.TankGraphicalObjectProducer;
 import ru.mipt.bit.platformer.obstacle.entity.Tree;
+import ru.mipt.bit.platformer.obstacle.ui.TreeGraphicalObject;
 import ru.mipt.bit.platformer.obstacle.ui.TreeGraphicalObjectProducer;
+import ru.mipt.bit.platformer.bullet.UI.BulletGraphicalObject;
+import ru.mipt.bit.platformer.bullet.UI.BulletGraphicalObjectProducer;
 import ru.mipt.bit.platformer.entity.Object;
 import ru.mipt.bit.platformer.entity.Updatable;
 import ru.mipt.bit.platformer.event.EventListener;
@@ -53,8 +57,6 @@ import java.util.HashMap;
 import java.util.function.Predicate;
 
 public class GameDesktopLauncher implements ApplicationListener {
-
-    private static final float MOVEMENT_SPEED = 2.0f;
 
     private Batch batch;
 
@@ -122,7 +124,7 @@ public class GameDesktopLauncher implements ApplicationListener {
         tileMovement = new TileMovement(groundLayer, Interpolation.smooth);
 
         TextureRegion tankTextureRegion = TextureProvider
-                .getTextureRegionFromImgPath(TextureProvider.tankTextureImgPath);
+                .getTextureRegionFromImgPath(TankGraphicalObject.tankTextureImgPath);
         closer.addClosable(new ClosableTexture(tankTextureRegion.getTexture()));
 
         GraphicalObjectProducer tankGraphicsProducer = new TankGraphicalObjectProducer(
@@ -130,16 +132,25 @@ public class GameDesktopLauncher implements ApplicationListener {
                 tileMovement);
 
         TextureRegion treeTextureRegion = TextureProvider
-                .getTextureRegionFromImgPath(TextureProvider.treeTextureImgPath);
+                .getTextureRegionFromImgPath(TreeGraphicalObject.treeTextureImgPath);
         closer.addClosable(new ClosableTexture(treeTextureRegion.getTexture()));
 
         GraphicalObjectProducer treeGraphicsProducer = new TreeGraphicalObjectProducer(
                 treeTextureRegion,
                 groundLayer);
 
+        TextureRegion bulletTextureRegion = TextureProvider
+                .getTextureRegionFromImgPath(BulletGraphicalObject.bulletTextureImgPath);
+        closer.addClosable(new ClosableTexture(bulletTextureRegion.getTexture()));
+
+        GraphicalObjectProducer bulletGraphicsProducer = new BulletGraphicalObjectProducer(
+                bulletTextureRegion,
+                tileMovement);
+
         HashMap<Class<?>, GraphicalObjectProducer> displayStrategy = new HashMap<>();
         displayStrategy.put(Tank.class, tankGraphicsProducer);
         displayStrategy.put(Tree.class, treeGraphicsProducer);
+        displayStrategy.put(Bullet.class, bulletGraphicsProducer);
 
         BatchDrawer batchDrawer = new BatchDrawer(batch);
         closer.addClosable(batchDrawer);
@@ -155,10 +166,10 @@ public class GameDesktopLauncher implements ApplicationListener {
         gameLevel = new Level(groundLayer.getWidth(), groundLayer.getHeight());
         gameLevel.subscribeToLevelEvents(levelGraphic);
 
-        // levelFillerProvider: use arg - what lvl init strategy(file or random)
+        // levelFillerProvider: use arg - what lvl init strategy(file or random)import
+        // ru.mipt.bit.platformer.movement.entity.DefaultMoveManager;
 
-        LevelFillerExecutor lvlFillerExec = new LevelFillerExecutor(new DefaultMoveManager(MOVEMENT_SPEED),
-                LevelFillerExecutor.FROM_FILE);
+        LevelFillerExecutor lvlFillerExec = new LevelFillerExecutor(LevelFillerExecutor.FROM_FILE);
 
         lvlFillerExec.fillLevel(gameLevel);
 

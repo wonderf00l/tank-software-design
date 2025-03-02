@@ -7,8 +7,9 @@ import java.util.HashMap;
 import ru.mipt.bit.platformer.level.entity.Level;
 import ru.mipt.bit.platformer.command.CommandProducer;
 import ru.mipt.bit.platformer.command.move.MoveCommandProducer;
+import ru.mipt.bit.platformer.command.shoot.ShootCommandProducer;
 import ru.mipt.bit.platformer.command.toggle.ToggleCommandProducer;
-import ru.mipt.bit.platformer.entity.Direction;
+import ru.mipt.bit.platformer.direction.Direction;
 
 public class KeyboardEventToCmdMapping {
     private Level level;
@@ -34,6 +35,7 @@ public class KeyboardEventToCmdMapping {
         mapping.put(Keys.DOWN, new MoveCommandProducer(level, Direction.DOWN));
         mapping.put(Keys.D, new MoveCommandProducer(level, Direction.RIGHT));
         mapping.put(Keys.RIGHT, new MoveCommandProducer(level, Direction.RIGHT));
+        mapping.put(Keys.SPACE, new ShootCommandProducer(level));
     }
 
     public HashMap<Integer, CommandProducer> getEventToCmdMappingForPlayer() {

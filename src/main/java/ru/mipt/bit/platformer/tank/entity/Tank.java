@@ -2,7 +2,7 @@ package ru.mipt.bit.platformer.tank.entity;
 
 import com.badlogic.gdx.math.GridPoint2;
 
-import ru.mipt.bit.platformer.entity.Direction;
+import ru.mipt.bit.platformer.direction.Direction;
 import ru.mipt.bit.platformer.entity.Healthy;
 import ru.mipt.bit.platformer.entity.Updatable;
 import ru.mipt.bit.platformer.entity.Oriented;
@@ -13,6 +13,7 @@ import ru.mipt.bit.platformer.movement.entity.MoveManager;;
 public class Tank implements Updatable, Oriented, Movable, Healthy {
 
     public static final float INIT_TANK_HEALTH = 80f;
+    public static final float TANK_MOVEMENT_SPEED = 2.0f;
 
     private GridPoint2 curLocation;
     private GridPoint2 destLocation;
@@ -20,19 +21,19 @@ public class Tank implements Updatable, Oriented, Movable, Healthy {
     private float rotation;
 
     private float movementProgress;
-    private MoveManager movementManager;
+    private float speed;
 
     private float health;
 
     private Level level;
 
-    public Tank(GridPoint2 initLocation, Direction initDirection, MoveManager moveManager, Level level, float health) {
+    public Tank(GridPoint2 initLocation, Direction initDirection, float speed, Level level, float health) {
         curLocation = initLocation;
         destLocation = curLocation.cpy();
 
         rotation = initDirection.getRotation();
 
-        movementManager = moveManager;
+        this.speed = speed;
         movementProgress = MoveManager.MOVEMENT_FINISH;
 
         this.level = level;
@@ -59,7 +60,7 @@ public class Tank implements Updatable, Oriented, Movable, Healthy {
         return movementProgress;
     }
 
-    private void updateDestination(Direction direction, boolean canMove) {
+    private void startMovement(Direction direction, boolean canMove) {
         rotation = direction.getRotation();
 
         if (!canMove) {
@@ -74,32 +75,45 @@ public class Tank implements Updatable, Oriented, Movable, Healthy {
         movementProgress = MoveManager.MOVEMENT_START;
     }
 
-    public void update(float deltaTime) {
-        movementProgress = movementManager.objectMovementProgressAfterDuration(movementProgress, deltaTime);
+    public void move(Direction direction, boolean canMove) {
+        if (!MoveManager.hasObjectFinishedMovement(movementProgress)) {
+            return;
+        }
 
-        if (!movementManager.hasObjectFinishedMovement(movementProgress)) {
+        startMovement(direction, canMove);
+    }
+
+    public void update(float deltaTime) {
+
+        if (!isAlive()) {
+            level.deleteObjectFromLevel(curLocation);
+
+            return;
+        }
+
+        movementProgress = MoveManager.objectMovementProgressAfterDuration(movementProgress, deltaTime, speed);
+
+        if (!MoveManager.hasObjectFinishedMovement(movementProgress)) {
             return;
         }
         // movement is finished, booked point is occupied now
 
         level.unbookLocation(destLocation);
 
+        GridPoint2 curLocationCpy = curLocation.cpy();
         curLocation.set(destLocation);
-
-        // and del destLoc from booked point
-
-        level.setObjectOnLocation(this, curLocation);
-    }
-
-    public void move(Direction direction, boolean canMove) {
-        if (!movementManager.hasObjectFinishedMovement(movementProgress)) {
-            return;
-        }
-
-        updateDestination(direction, canMove);
+        level.replaceObject(this, curLocationCpy, curLocation.cpy());
     }
 
     public float getHealth() {
         return health;
+    }
+
+    public void setHealth(float health) {
+        this.health = health;
+    }
+
+    public boolean isAlive() {
+        return health > 0;
     }
 }

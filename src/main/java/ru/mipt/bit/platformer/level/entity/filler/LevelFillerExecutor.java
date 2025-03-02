@@ -8,7 +8,6 @@ import ru.mipt.bit.platformer.level.entity.Level;
 
 import ru.mipt.bit.platformer.level.entity.filler.file.FromFileLevelFiller;
 import ru.mipt.bit.platformer.level.entity.filler.random.RandomLevelFiller;
-import ru.mipt.bit.platformer.movement.entity.MoveManager;
 
 public class LevelFillerExecutor {
     private static String LVL_FILE_PATH = "src/main/resources/level.txt";
@@ -18,11 +17,7 @@ public class LevelFillerExecutor {
 
     private LevelFiller levelFiller;
 
-    private MoveManager moveManager;
-
-    public LevelFillerExecutor(MoveManager moveManager, int fillStrategy) {
-        this.moveManager = moveManager;
-
+    public LevelFillerExecutor(int fillStrategy) {
         setLevelFillerFromFillStrategy(fillStrategy);
     }
 
@@ -34,7 +29,7 @@ public class LevelFillerExecutor {
                 levelFile = new FileReader(LVL_FILE_PATH);
 
                 levelFiller = new FromFileLevelFiller(
-                        new BufferedReader(levelFile), moveManager);
+                        new BufferedReader(levelFile));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -42,7 +37,7 @@ public class LevelFillerExecutor {
             return;
         }
 
-        levelFiller = new RandomLevelFiller(moveManager);
+        levelFiller = new RandomLevelFiller();
     }
 
     public void fillLevel(Level level) {

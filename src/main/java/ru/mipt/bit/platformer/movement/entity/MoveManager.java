@@ -1,12 +1,19 @@
 package ru.mipt.bit.platformer.movement.entity;
 
-// можно было сделать частью api танка, но потенциально эту логику можно переиспользовать для др. объектов
-public interface MoveManager {
+import static com.badlogic.gdx.math.MathUtils.clamp;
+
+// del interface, spped as arg
+public class MoveManager {
 
     public static final float MOVEMENT_START = 0f;
     public static final float MOVEMENT_FINISH = 1f;
 
-    float objectMovementProgressAfterDuration(float curObjMoveProgress, float moveDuration);
+    public static float objectMovementProgressAfterDuration(float curObjMoveProgress, float moveDuration, float speed) {
+        return clamp(curObjMoveProgress + moveDuration / speed, MOVEMENT_START, MOVEMENT_FINISH);
+    }
 
-    boolean hasObjectFinishedMovement(float objMoveProgress);
+    public static boolean hasObjectFinishedMovement(float objMoveProgress) {
+        return objMoveProgress == MOVEMENT_FINISH;
+    }
+
 }

@@ -1,6 +1,7 @@
 package ru.mipt.bit.platformer.level.ui;
 
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.Collection;
@@ -18,7 +19,7 @@ import ru.mipt.bit.platformer.closer.Closable;
 
 public class LevelGraphicalObject implements LevelListener {
 
-    private HashMap<Object, Displayable> levelObjects = new HashMap<>();
+    private IdentityHashMap<Object, Displayable> levelObjects = new IdentityHashMap<>();
 
     private final HashMap<Class<?>, GraphicalObjectProducer> displayStrategy;
 

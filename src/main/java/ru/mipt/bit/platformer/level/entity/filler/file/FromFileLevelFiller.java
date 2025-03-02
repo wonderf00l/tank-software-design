@@ -6,11 +6,10 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.math.GridPoint2;
 
-import ru.mipt.bit.platformer.entity.Direction;
+import ru.mipt.bit.platformer.direction.Direction;
 import ru.mipt.bit.platformer.entity.Object;
 import ru.mipt.bit.platformer.level.entity.Level;
 import ru.mipt.bit.platformer.level.entity.filler.LevelFiller;
-import ru.mipt.bit.platformer.movement.entity.MoveManager;
 import ru.mipt.bit.platformer.obstacle.entity.Tree;
 import ru.mipt.bit.platformer.tank.entity.Tank;
 
@@ -22,17 +21,13 @@ public class FromFileLevelFiller implements LevelFiller {
 
     private BufferedReader bufReader;
 
-    private MoveManager moveManager;
-
     private ArrayList<Object> fetchedObjects = new ArrayList<>();
 
     // потенциально может быть несколько, для простоты храним один
     private Object objControlledByPlayer;
 
-    public FromFileLevelFiller(BufferedReader reader, MoveManager moveManager) {
+    public FromFileLevelFiller(BufferedReader reader) {
         bufReader = reader;
-
-        this.moveManager = moveManager;
     }
 
     public void fillLevel(Level level) throws InvalidLevelSizeException {
@@ -74,10 +69,10 @@ public class FromFileLevelFiller implements LevelFiller {
                     Tank tank = new Tank(
                             location,
                             Direction.RIGHT,
-                            moveManager,
+                            Tank.TANK_MOVEMENT_SPEED,
                             level, Tank.INIT_TANK_HEALTH);
 
-                    level.setNewObjectOnLevel(tank, location);
+                    level.setNewObjectOnLevel(tank, location.cpy());
 
                     if (cellCh == PLAYER) {
                         objControlledByPlayer = tank;
@@ -90,6 +85,7 @@ public class FromFileLevelFiller implements LevelFiller {
                 case TREE:
                     Tree tree = new Tree(location);
 
+                    // no cpy, т.к location не будет меняться
                     level.setNewObjectOnLevel(tree, location);
 
                     fetchedObjects.add(tree);

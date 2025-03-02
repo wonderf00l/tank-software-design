@@ -1,8 +1,9 @@
-package ru.mipt.bit.platformer.entity;
+package ru.mipt.bit.platformer.direction;
 
 import com.badlogic.gdx.math.GridPoint2;
 
 public enum Direction {
+
     RIGHT(0f, new GridPoint2(1, 0)),
     LEFT(-180f, new GridPoint2(-1, 0)),
     UP(90f, new GridPoint2(0, 1)),
@@ -14,6 +15,26 @@ public enum Direction {
     Direction(float rotation, GridPoint2 coordsDelta) {
         this.rotation = rotation;
         this.coordsDelta = coordsDelta;
+    }
+
+    public static final Direction directionFromRotation(float rotation) throws InvalidRotationException {
+        if (rotation == RIGHT.rotation) {
+            return RIGHT;
+        }
+
+        if (rotation == LEFT.rotation) {
+            return LEFT;
+        }
+
+        if (rotation == UP.rotation) {
+            return UP;
+        }
+
+        if (rotation == DOWN.rotation) {
+            return DOWN;
+        }
+
+        throw new InvalidRotationException(rotation);
     }
 
     public float getRotation() {

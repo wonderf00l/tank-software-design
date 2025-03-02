@@ -11,7 +11,7 @@ import static com.badlogic.gdx.Input.Keys.*;
 
 public class KeyboardEventListener implements EventListener {
 
-    private static final int[] keysToCheck = { W, UP, A, LEFT, S, DOWN, D, RIGHT, L };
+    private static final int[] keysToCheck = { W, UP, A, LEFT, S, DOWN, D, RIGHT, L, SPACE };
 
     public ArrayList<Event> happenedEvents() {
         ArrayList<Event> happenedEvents = new ArrayList<>();
