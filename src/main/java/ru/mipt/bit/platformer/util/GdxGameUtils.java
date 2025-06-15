@@ -47,7 +47,8 @@ public final class GdxGameUtils {
         }
     }
 
-    public static Rectangle moveRectangleAtTileCenter(TiledMapTileLayer tileLayer, Rectangle rectangle, GridPoint2 tileCoordinates) {
+    public static Rectangle moveRectangleAtTileCenter(TiledMapTileLayer tileLayer, Rectangle rectangle,
+            GridPoint2 tileCoordinates) {
         Vector2 tileCenter = calculateTileCenter(tileLayer, tileCoordinates);
         return rectangle.setCenter(tileCenter);
     }
@@ -68,12 +69,14 @@ public final class GdxGameUtils {
         return new GridPoint2(point).add(1, 0);
     }
 
-    public static void drawTextureRegionUnscaled(Batch batch, TextureRegion region, Rectangle rectangle, float rotation) {
+    public static void drawTextureRegionUnscaled(Batch batch, TextureRegion region, Rectangle rectangle,
+            float rotation) {
         int regionWidth = region.getRegionWidth();
         int regionHeight = region.getRegionHeight();
         float regionOriginX = regionWidth / 2f;
         float regionOriginY = regionHeight / 2f;
-        batch.draw(region, rectangle.x, rectangle.y, regionOriginX, regionOriginY, regionWidth, regionHeight, 1f, 1f, rotation);
+        batch.draw(region, rectangle.x, rectangle.y, regionOriginX, regionOriginY, regionWidth, regionHeight, 1f, 1f,
+                rotation);
     }
 
     public static Rectangle createBoundingRectangle(TextureRegion region) {
@@ -87,7 +90,7 @@ public final class GdxGameUtils {
     }
 
     private static Vector2 calculateTileCenter(TiledMapTileLayer tileLayer, GridPoint2 tileCoordinates) {
-        int tileWidth = tileLayer.getTileWidth();
+        int tileWidth = tileLayer.getTileWidth(); // передается целый слой чтобы вытащить параметры одной плитки
         int tileHeight = tileLayer.getTileHeight();
         int tileBottomLeftCornerX = tileCoordinates.x * tileWidth;
         int tileBottomLeftCornerY = tileCoordinates.y * tileHeight;
